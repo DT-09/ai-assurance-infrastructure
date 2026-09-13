@@ -1,18 +1,42 @@
-from app.models import QualificationResult
+from .models import Agent, AgentStatus
+from .storage import SQLiteStorage
 
 
-class QualificationRegistry:
-    def __init__(self):
-        self._records: dict[str, QualificationResult] = {}
+class AgentRegistry:
+    def __init__(self, database_path: str = "gateway.db"):
+        self.storage = SQLiteStorage(database_path)
 
-    def set(self, agent_id: str, result: QualificationResult) -> None:
-        self._records[agent_id] = result
+    def register(self, agent: Agent) -> Agent:
+        self.storage.save_agent(agent)
+        return agent
 
-    def get(self, agent_id: str) -> QualificationResult | None:
-        return self._records.get(agent_id)
+    def get(self, agent_id: str) -> Agent | None:
+        return self.storage.get_agent(agent_id)
 
     def remove(self, agent_id: str) -> None:
-        self._records.pop(agent_id, None)
+        self.storage.delete_agent(agent_id)
 
-    def all(self) -> dict[str, QualificationResult]:
-        return self._records.copy()
+    def all(self) -> dict[str, Agent]:
+        return self.storage.get_all_agents()
+
+    def suspend(self, agent_id: str) -> Agent | None:
+        agent = self.get(agent_id)
+
+        if agent is None:
+            return None
+
+        agent.status = AgentStatus.SUSPENDED
+        self.storage.save_agent(agent)
+
+        return agent
+
+    def revoke(self, agent_id: str) -> Agent | None:
+        agent = self.get(agent_id)
+
+        if agent is None:
+            return None
+
+        agent.status = AgentStatus.REVOKED
+        self.storage.save_agent(agent)
+
+        return agent

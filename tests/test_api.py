@@ -1,16 +1,33 @@
-﻿import json
-import urllib.request
+﻿import asyncio
 
-from fastapi.testclient import TestClient
+import httpx
 
 from app.main import app
 
 
-client = TestClient(app)
+def api_request(
+    method: str,
+    path: str,
+    json: dict | None = None,
+) -> httpx.Response:
+    async def make_request() -> httpx.Response:
+        transport = httpx.ASGITransport(app=app)
+
+        async with httpx.AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+        ) as client:
+            return await client.request(
+                method=method,
+                url=path,
+                json=json,
+            )
+
+    return asyncio.run(make_request())
 
 
 def test_health():
-    response = client.get("/api/health")
+    response = api_request("GET", "/api/health")
 
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
@@ -46,7 +63,11 @@ def test_qualification_pass():
         ],
     }
 
-    response = client.post("/api/qualify", json=payload)
+    response = api_request(
+        "POST",
+        "/api/qualify",
+        json=payload,
+    )
 
     assert response.status_code == 200
 
@@ -76,7 +97,11 @@ def test_critical_failure_blocks():
         ],
     }
 
-    response = client.post("/api/qualify", json=payload)
+    response = api_request(
+        "POST",
+        "/api/qualify",
+        json=payload,
+    )
 
     assert response.status_code == 200
 
@@ -87,7 +112,7 @@ def test_critical_failure_blocks():
 
 
 def test_demo():
-    response = client.get("/api/demo")
+    response = api_request("GET", "/api/demo")
 
     assert response.status_code == 200
 
@@ -97,6 +122,7 @@ def test_demo():
     assert result["total_cases"] == 4
     assert result["critical_failures"] == 1
     assert result["verdict"] == "BLOCKED"
+
 
 def test_real_agent_execution():
     from app.demo_agent import refund_agent
@@ -129,7 +155,24 @@ def test_real_agent_execution():
     assert result.successful_cases == 2
     assert result.reliability_score == 100
     assert result.verdict == "QUALIFIED"
+
+
 def test_remote_qualification_endpoint_validation():
-    response = client.post("/api/qualify/remote", json={"name": "X", "test_cases": [{"input_data": "x", "expected_output": "y"}]})
+    payload = {
+        "name": "X",
+        "test_cases": [
+            {
+                "input_data": "x",
+                "expected_output": "y",
+            }
+        ],
+    }
+
+    response = api_request(
+        "POST",
+        "/api/qualify/remote",
+        json=payload,
+    )
+
     assert response.status_code == 400
     assert "agent_url" in response.json()["detail"]

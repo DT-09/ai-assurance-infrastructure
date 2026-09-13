@@ -9,6 +9,25 @@ class Decision(str, Enum):
     APPROVAL_REQUIRED = "APPROVAL_REQUIRED"
 
 
+class AgentStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    REVOKED = "REVOKED"
+
+
+class Organization(BaseModel):
+    organization_id: str
+    name: str
+
+
+class Credential(BaseModel):
+    credential_id: str
+    organization_id: str
+    name: str
+    created_at: str
+    revoked_at: str | None = None
+
+
 class AgentAction(BaseModel):
     agent_id: str
     tool: str
@@ -27,12 +46,24 @@ class Policy(BaseModel):
     approval_actions: list[str] = Field(default_factory=list)
 
 
+class Agent(BaseModel):
+    agent_id: str
+    organization_id: str
+    owner: str
+    environment: str
+    status: AgentStatus = AgentStatus.ACTIVE
+    qualification_status: str = "NOT_QUALIFIED"
+    policy: Policy = Field(default_factory=Policy)
+
+
 class DecisionResult(BaseModel):
     decision: Decision
     reason: str
     agent_id: str
     tool: str
     action: str
+    risk_score: float = 0.0
+    approval_id: str | None = None
 
 
 class AuditEvent(BaseModel):
@@ -41,3 +72,5 @@ class AuditEvent(BaseModel):
     action: str
     decision: Decision
     reason: str
+    risk_score: float = 0.0
+    approval_id: str | None = None
