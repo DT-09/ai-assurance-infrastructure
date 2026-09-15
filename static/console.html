@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="AI Assurance Infrastructure — the control plane for identity, evidence, policy, trust and runtime enforcement across autonomous AI systems.">
+<title>AI Assurance Infrastructure</title>
+<link rel="stylesheet" href="/static/console.css">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="mark">A</div><div><strong>AI Assurance</strong><span>Infrastructure</span></div></div>
+  <nav class="nav">
+    <button class="active" data-view="overview">Overview</button>
+    <button data-view="assets">AI Assets</button>
+    <button data-view="assurance">Assurance</button>
+    <button data-view="policies">Policies</button>
+    <button data-view="protocol">Protocol</button>
+    <button data-view="access">Workspace</button>
+    <button data-view="billing">Billing</button>
+  </nav>
+  <div class="side-foot">Vendor-neutral assurance infrastructure<br>Production control plane v4.0.0</div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="crumb" id="crumb">Control Plane / Overview</div><div class="top-actions"><span class="pill"><span class="status-dot"></span><span id="serviceStatus">Operational</span></span><span class="pill" id="envPill">Development</span></div></header>
+<div class="content">
+<section class="view active" id="view-overview">
+  <div class="hero"><div><div class="eyebrow">AI Assurance Control Plane</div><h1>Trust infrastructure for autonomous AI.</h1><p>Identity, authority, evidence, policy, continuous assurance and runtime enforcement in one vendor-neutral control plane.</p></div><div class="hero-side"><strong id="version">v4.0.0</strong><span id="backend">Persistence: checking…</span></div></div>
+  <div class="grid four">
+    <div class="card pad"><div class="metric-label">Registered assets</div><div class="metric-value" id="metricAssets">—</div><div class="metric-sub">AI systems under control</div></div>
+    <div class="card pad"><div class="metric-label">Assurance state</div><div class="metric-value" id="metricState">—</div><div class="metric-sub">Current trust posture</div></div>
+    <div class="card pad"><div class="metric-label">Policy posture</div><div class="metric-value">Enforced</div><div class="metric-sub">Deterministic control decisions</div></div>
+    <div class="card pad"><div class="metric-label">Protocol</div><div class="metric-value">v1</div><div class="metric-sub">Machine-verifiable assurance</div></div>
+  </div>
+  <div class="section-head"><h2>Control plane architecture</h2><span>Persistent assurance lifecycle</span></div>
+  <div class="card architecture"><div class="architecture-grid">
+    <div class="arch-node"><b>Identity & Registry</b><span>Who is this system? Version, environment, owner and credentials.</span></div>
+    <div class="arch-node"><b>Dependency Graph</b><span>Models, tools, services and authority relationships.</span></div>
+    <div class="arch-node"><b>Evidence Fabric</b><span>Evaluation evidence, provenance and verification.</span></div>
+    <div class="arch-node"><b>Policy & Trust</b><span>Rules become machine-readable trust states.</span></div>
+    <div class="arch-node"><b>Enforcement</b><span>Deployment and runtime decisions: allow, review or deny.</span></div>
+  </div></div>
+  <div class="section-head"><h2>Operating contract</h2><span>Four questions the infrastructure answers</span></div>
+  <div class="grid four">
+    <div class="card pad"><div class="metric-label">01</div><h3>Identity</h3><p class="metric-sub">Which AI asset and exact version is operating?</p></div>
+    <div class="card pad"><div class="metric-label">02</div><h3>Authority</h3><p class="metric-sub">What actions, tools and environments is it permitted to use?</p></div>
+    <div class="card pad"><div class="metric-label">03</div><h3>Evidence</h3><p class="metric-sub">What machine-verifiable evidence supports its current posture?</p></div>
+    <div class="card pad"><div class="metric-label">04</div><h3>Control</h3><p class="metric-sub">Should deployment or execution be allowed right now?</p></div>
+  </div>
+  <div class="section-head"><h2>Platform status</h2><span>Live application checks</span></div>
+  <div class="card table-wrap"><table class="table"><thead><tr><th>Subsystem</th><th>Status</th><th>Backend</th><th>Role</th></tr></thead><tbody id="healthTable"><tr><td colspan="4" class="empty">Checking control-plane health…</td></tr></tbody></table></div>
+</section>
+<section class="view" id="view-assets">
+  <div class="hero"><div><div class="eyebrow">Registry</div><h1>AI Assets</h1><p>Register every autonomous system as a durable identity with immutable versions and dependency relationships.</p></div><button class="button primary" data-action="open-asset">Register asset</button></div>
+  <div class="notice" id="workspaceNotice"><strong>Workspace access required.</strong> Add an API key in Workspace to manage registered assets.</div>
+  <div class="section-head"><h2>Registered systems</h2><span id="assetCount">0 assets</span></div>
+  <div class="card table-wrap"><table class="table"><thead><tr><th>Asset</th><th>Type</th><th>Version</th><th>Environment</th><th>Trust</th><th></th></tr></thead><tbody id="assetTable"><tr><td colspan="6" class="empty">No workspace loaded.</td></tr></tbody></table></div>
+</section>
+<section class="view" id="view-assurance">
+  <div class="hero"><div><div class="eyebrow">Continuous assurance</div><h1>Assurance posture</h1><p>Evidence-backed trust state for deployment and runtime decisions. Assurance is persistent, inspectable and enforceable.</p></div></div>
+  <div class="grid three"><div class="card pad"><div class="metric-label">Current state</div><div class="metric-value" id="assuranceState">—</div><div class="metric-sub">Derived from registered assurance evidence</div></div><div class="card pad"><div class="metric-label">Decision model</div><div class="metric-value">Deterministic</div><div class="metric-sub">Policy → trust → enforcement</div></div><div class="card pad"><div class="metric-label">Evidence</div><div class="metric-value">Verifiable</div><div class="metric-sub">Canonical records and provenance</div></div></div>
+  <div class="section-head"><h2>Assurance lifecycle</h2><span>From evidence to action</span></div>
+  <div class="card pad"><div class="timeline"><div class="event"><time>01 · REGISTER</time><div><b>Asset identity established</b><p>System, version, environment, model/framework and ownership become durable control-plane records.</p></div></div><div class="event"><time>02 · EVALUATE</time><div><b>Evidence submitted</b><p>Reliability, security, behavior, policy and operational evidence is attached to the exact asset version.</p></div></div><div class="event"><time>03 · COMPUTE</time><div><b>Trust state calculated</b><p>Policy rules produce an explicit assurance state with transition history and provenance.</p></div></div><div class="event"><time>04 · ENFORCE</time><div><b>Execution decision issued</b><p>Deployment and runtime controls consume the trust state and return allow, review or deny.</p></div></div></div></div>
+</section>
+<section class="view" id="view-policies">
+  <div class="hero"><div><div class="eyebrow">Policy engine</div><h1>Policies</h1><p>Express organizational requirements as machine-readable rules and bind them to AI assets or environments.</p></div><button class="button primary" data-action="open-policy">Create policy</button></div>
+  <div class="card pad"><div class="section-head" style="margin-top:0"><h2>Control principles</h2><span>Vendor-neutral</span></div><div class="grid three"><div><b>Blocking thresholds</b><p class="metric-sub">Prevent deployment when required assurance conditions are not met.</p></div><div><b>Scoped bindings</b><p class="metric-sub">Apply policies by asset, version and environment.</p></div><div><b>Auditability</b><p class="metric-sub">Retain policy and trust transitions for inspection.</p></div></div></div>
+  <div class="section-head"><h2>Workspace policies</h2><span>Requires API key</span></div><div class="card table-wrap"><table class="table"><thead><tr><th>Name</th><th>Version</th><th>Rules</th><th>Scope</th></tr></thead><tbody id="policyTable"><tr><td colspan="4" class="empty">No workspace loaded.</td></tr></tbody></table></div>
+</section>
+<section class="view" id="view-protocol">
+  <div class="hero"><div><div class="eyebrow">Open assurance protocol</div><h1>Interoperability layer</h1><p>A machine-verifiable protocol for portable AI identity, assurance evidence, trust state and enforcement across providers, frameworks and clouds.</p></div><a class="button" href="/protocol" target="_blank">Protocol specification</a></div>
+  <div class="grid two"><div class="card pad"><div class="metric-label">Protocol</div><div class="metric-value" id="protocolName">AI Assurance Protocol</div><div class="metric-sub" id="protocolVersion">Version 1.0</div></div><div class="card pad"><div class="metric-label">Integrity</div><div class="metric-value">SHA-256</div><div class="metric-sub">Canonical JSON integrity for machine verification</div></div></div>
+  <div class="section-head"><h2>Protocol manifest</h2><span>Public endpoint</span></div><pre class="code mono" id="manifest">Loading manifest…</pre>
+</section>
+<section class="view" id="view-access">
+  <div class="hero"><div><div class="eyebrow">Workspace</div><h1>Connect a control-plane workspace.</h1><p>API keys are kept in this browser session only. Never paste production secrets into a shared or public computer.</p></div></div>
+  <div class="grid two"><div class="card pad"><h3>API key</h3><div class="form"><div class="field"><label>X-API-Key</label><input id="apiKey" type="password" placeholder="aap_…"></div><div class="control"><button class="button primary" data-action="save-key">Connect workspace</button><button class="button" data-action="clear-key">Clear</button></div><div class="notice" id="keyStatus">No workspace credential loaded.</div></div></div><div class="card pad"><h3>Bootstrap</h3><p class="metric-sub">Initial organization provisioning is intentionally separated from ordinary workspace access.</p><div class="form"><div class="field"><label>Bootstrap credential</label><input id="bootstrapKey" type="password" placeholder="Configured by the operator"></div><div class="field"><label>Organization name</label><input id="orgName" value="Enterprise Workspace"></div><button class="button" data-action="bootstrap">Provision organization</button><div class="notice">The bootstrap credential is sent only to the configured control-plane endpoint.</div></div></div></div>
+</section>
+<section class="view" id="view-billing">
+  <div class="hero"><div><div class="eyebrow">Commercial infrastructure</div><h1>Billing</h1><p>Manage the assurance capacity attached to this workspace. Payment processing is handled by the configured payment provider.</p></div><a class="button" href="/pricing" target="_blank">View plans</a></div>
+  <div class="grid three"><div class="card pad"><div class="metric-label">Plan</div><div class="metric-value" id="billingPlan">—</div><div class="metric-sub" id="billingStatus">Checking subscription</div></div><div class="card pad"><div class="metric-label">Evaluations</div><div class="metric-value" id="billingEvaluations">—</div><div class="metric-sub">Current monthly usage</div></div><div class="card pad"><div class="metric-label">Assets</div><div class="metric-value" id="billingAssets">—</div><div class="metric-sub">Current monthly usage</div></div></div>
+  <div class="card pad"><h3>Change plan</h3><div class="form"><div class="field"><label>Billing email</label><input id="billingEmail" type="email" placeholder="finance@company.com"></div><div class="field"><label>Plan</label><select id="billingPlanSelect"><option value="growth">Growth — $2,499/month</option><option value="enterprise">Enterprise — custom</option><option value="developer">Developer — free</option></select></div><div class="control"><button class="button primary" data-action="checkout">Start checkout</button><span class="notice" id="billingMessage">Connect a workspace to manage billing.</span></div></div></div>
+</section>
+<div class="footer">AI Assurance Infrastructure · vendor-neutral AI assurance control plane · software release 4.0.0</div>
+</div></main></div>
+
+<div class="modal" id="assetModal"><div class="modal-box"><div class="modal-head"><h3>Register AI asset</h3><button class="x" data-action="close-asset">×</button></div><div class="form"><div class="field"><label>Name</label><input id="newAssetName" placeholder="e.g. Customer Support Agent"></div><div class="form-row"><div class="field"><label>Project ID</label><input id="newAssetProject" placeholder="project_…"></div><div class="field"><label>Asset type</label><input id="newAssetType" value="agent"></div></div><div class="field"><label>Owner</label><input id="newAssetOwner" placeholder="Team or service owner"></div><div class="control"><button class="button" data-action="close-asset">Cancel</button><button class="button primary" data-action="create-asset">Register</button></div></div></div></div>
+<div class="modal" id="policyModal"><div class="modal-box"><div class="modal-head"><h3>Create policy</h3><button class="x" data-action="close-policy">×</button></div><div class="form"><div class="field"><label>Name</label><input id="newPolicyName" value="Production Assurance"></div><div class="field"><label>Rules (JSON)</label><textarea id="newPolicyRules">[{"metric":"reliability","operator":">=","threshold":0.95,"severity":"blocking"}]</textarea></div><div class="control"><button class="button" data-action="close-policy">Cancel</button><button class="button primary" data-action="create-policy">Create policy</button></div></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="/static/console.js" defer></script>
+</body>
+</html>

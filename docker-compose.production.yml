@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: assurance
+      POSTGRES_USER: assurance
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U assurance -d assurance"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    environment:
+      ASSURANCE_ENV: production
+      ASSURANCE_DATABASE_URL: postgresql://assurance:${POSTGRES_PASSWORD}@postgres:5432/assurance
+      ASSURANCE_BOOTSTRAP_KEY: ${ASSURANCE_BOOTSTRAP_KEY:?set ASSURANCE_BOOTSTRAP_KEY}
+      ASSURANCE_CORS_ORIGINS: ${ASSURANCE_CORS_ORIGINS:-http://localhost:8000}
+      ASSURANCE_TRUSTED_HOSTS: ${ASSURANCE_TRUSTED_HOSTS:-localhost,127.0.0.1}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+
+volumes:
+  postgres_data:

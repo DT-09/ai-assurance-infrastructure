@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ai-assurance-protocol:v1:schema",
+  "title": "AI Assurance Protocol v1 Envelope",
+  "type": "object",
+  "required": ["protocol", "protocol_version", "kind", "payload", "integrity"],
+  "properties": {
+    "protocol": {"const": "AI Assurance Protocol"},
+    "protocol_version": {"const": "1.0.0"},
+    "kind": {"type": "string", "minLength": 1},
+    "payload": {"type": "object"},
+    "integrity": {
+      "type": "object",
+      "required": ["algorithm", "content_hash"],
+      "properties": {
+        "algorithm": {"const": "SHA-256"},
+        "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

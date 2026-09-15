@@ -1,0 +1,27 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Qualification output
+qualification-result.json
+
+# Python packaging
+*.egg-info/
+build/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
