@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Workflow Qualification</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#080b12;color:#f5f7fb}.container{width:min(1100px,92%);margin:auto}nav{height:70px;border-bottom:1px solid #202633;display:flex;align-items:center;justify-content:space-between}.logo{font-weight:750}.badge{font-size:12px;color:#9da8ba;border:1px solid #2b3342;padding:7px 11px;border-radius:999px}.hero{padding:65px 0 35px;max-width:850px}.eyebrow{color:#8fa3ff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px}h1{font-size:clamp(40px,6vw,68px);line-height:1.03;letter-spacing:-3px;margin:15px 0}.hero p{color:#aab3c2;font-size:18px;line-height:1.6}.panel{background:#0e131c;border:1px solid #202633;border-radius:14px;padding:26px;margin:20px 0 45px}.panel h2{margin:0 0 7px}.muted{color:#8994a6;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.field{background:#0a0e15;border:1px solid #202633;border-radius:10px;padding:13px}.field.full{grid-column:1/-1}label{display:block;color:#8994a6;font-size:12px;margin-bottom:7px}input,textarea{width:100%;background:#090d14;color:#f5f7fb;border:1px solid #2b3342;border-radius:8px;padding:10px;font:inherit}textarea{min-height:115px;resize:vertical}.help{margin-top:5px;font-size:11px;color:#687386}.buttons{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}button{border:0;border-radius:9px;padding:12px 17px;font-weight:700;cursor:pointer}.primary{background:#f5f7fb;color:#080b12}.secondary{background:#151b25;color:#f5f7fb;border:1px solid #2b3342}.status{margin-top:15px;padding:12px;border:1px solid #202633;border-radius:9px;display:none}.bad{color:#ff7373}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0}.metric{background:#0a0e15;border:1px solid #202633;border-radius:12px;padding:17px}.value{font-size:25px;font-weight:750;margin-top:5px}.verdict{padding:18px;border:1px solid #2b3342;border-radius:12px;background:#111722}.verdict-title{font-size:22px;font-weight:750}.failure{margin-top:9px;padding:13px;border:1px solid #33252a;background:#140f13;border-radius:9px}.ok{color:#67d391}.warn{color:#f2c66d}footer{color:#687386;font-size:12px;padding:15px 0 50px}@media(max-width:850px){.grid,.metrics{grid-template-columns:1fr 1fr}}@media(max-width:600px){.grid,.metrics{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="container">
+<nav><div class="logo">AI Workflow Qualification</div><div class="badge">Production Readiness</div></nav>
+<section class="hero">
+<div class="eyebrow">Agent deployment qualification</div>
+<h1>Test the agent. Qualify the workflow. Decide before production.</h1>
+<p>Run representative test cases against an AI workflow, measure reliability and failure risk, and produce an evidence-based qualification decision.</p>
+</section>
+<section class="panel">
+<h2>Workflow qualification</h2>
+<div class="muted">This public demo runs entirely in your browser. No API key, server, or data upload is required.</div>
+<div class="grid">
+<div class="field full"><label>Workflow name</label><input id="name" value="Customer Refund Agent"></div>
+<div class="field"><label>Target reliability (%)</label><input id="reliabilityTarget" type="number" value="95" min="0" max="100"></div>
+<div class="field"><label>Maximum critical failures</label><input id="criticalLimit" type="number" value="0" min="0"></div>
+<div class="field"><label>Maximum human review rate (%)</label><input id="humanLimit" type="number" value="20" min="0" max="100"></div>
+<div class="field"><label>Maximum average latency (ms)</label><input id="latencyLimit" type="number" value="2000" min="0"></div>
+<div class="field full"><label>Representative test cases</label><textarea id="cases">[
+  {"case_id":"CASE-001","input_data":"Customer received a damaged product","expected_output":"REFUND_APPROVED","actual_output":"REFUND_APPROVED","success":true,"latency_ms":420,"critical":true},
+  {"case_id":"CASE-002","input_data":"Customer asks for a refund outside policy","expected_output":"REFUND_DENIED","actual_output":"REFUND_DENIED","success":true,"latency_ms":510,"critical":true},
+  {"case_id":"CASE-003","input_data":"Customer has an unclear request","expected_output":"HUMAN_REVIEW","actual_output":"HUMAN_REVIEW","success":true,"latency_ms":610,"human_review_required":true,"critical":false},
+  {"case_id":"CASE-004","input_data":"Customer claims a refund was already issued","expected_output":"REFUND_DENIED","actual_output":"REFUND_APPROVED","success":false,"latency_ms":730,"critical":true}
+]</textarea><div class="help">Edit the cases to model a different qualification run. This demo calculates the decision locally.</div></div>
+</div>
+<div class="buttons">
+<button class="primary" onclick="runQualification()">Run qualification</button>
+<button class="secondary" onclick="resetDemo()">Reset demo</button>
+<button class="secondary" id="download" style="display:none" onclick="downloadReport()">Download report</button>
+</div>
+<div class="status" id="status"></div>
+</section>
+<section class="panel" id="report" style="display:none">
+<h2>Qualification report</h2>
+<div class="muted" id="reportName"></div>
+<div class="metrics">
+<div class="metric"><div class="muted">Reliability</div><div class="value" id="mReliability">—</div></div>
+<div class="metric"><div class="muted">Critical failures</div><div class="value" id="mCritical">—</div></div>
+<div class="metric"><div class="muted">Tool failures</div><div class="value" id="mTools">—</div></div>
+<div class="metric"><div class="muted">Human review</div><div class="value" id="mHuman">—</div></div>
+<div class="metric"><div class="muted">Avg latency</div><div class="value" id="mLatency">—</div></div>
+</div>
+<div class="verdict">
+<div class="muted">Production decision</div>
+<div class="verdict-title" id="verdict">—</div>
+<p class="muted" id="reasons"></p>
+</div>
+<h3>Detected failures</h3><div id="failures"></div>
+</section>
+<footer>AI Workflow Qualification · qualification engine v1.0 · Public browser demo</footer>
+</div>
+<script>
+let lastReport=null;
+function setStatus(msg,bad=false){const s=document.getElementById('status');s.style.display='block';s.textContent=msg;s.className='status '+(bad?'bad':'');}
+function resetDemo(){
+ document.getElementById('name').value='Customer Refund Agent';
+ document.getElementById('reliabilityTarget').value=95;
+ document.getElementById('criticalLimit').value=0;
+ document.getElementById('humanLimit').value=20;
+ document.getElementById('latencyLimit').value=2000;
+ document.getElementById('cases').value=`[
+  {"case_id":"CASE-001","input_data":"Customer received a damaged product","expected_output":"REFUND_APPROVED","actual_output":"REFUND_APPROVED","success":true,"latency_ms":420,"critical":true},
+  {"case_id":"CASE-002","input_data":"Customer asks for a refund outside policy","expected_output":"REFUND_DENIED","actual_output":"REFUND_DENIED","success":true,"latency_ms":510,"critical":true},
+  {"case_id":"CASE-003","input_data":"Customer has an unclear request","expected_output":"HUMAN_REVIEW","actual_output":"HUMAN_REVIEW","success":true,"latency_ms":610,"human_review_required":true,"critical":false},
+  {"case_id":"CASE-004","input_data":"Customer claims a refund was already issued","expected_output":"REFUND_DENIED","actual_output":"REFUND_APPROVED","success":false,"latency_ms":730,"critical":true}
+]`;
+ document.getElementById('report').style.display='none';document.getElementById('download').style.display='none';setStatus('Demo reset.');
+}
+function runQualification(){
+ let cases;try{cases=JSON.parse(document.getElementById('cases').value);if(!Array.isArray(cases)||!cases.length)throw new Error('Provide at least one test case.')}catch(e){setStatus('Invalid test-case JSON: '+e.message,true);return;}
+ const target=Number(document.getElementById('reliabilityTarget').value),criticalLimit=Number(document.getElementById('criticalLimit').value),humanLimit=Number(document.getElementById('humanLimit').value),latencyLimit=Number(document.getElementById('latencyLimit').value);
+ let passed=0,criticalFailures=0,toolFailures=0,humanReviews=0,totalLatency=0;const failures=[];
+ cases.forEach((c,i)=>{const success=Boolean(c.success),critical=Boolean(c.critical),human=Boolean(c.human_review_required),latency=Number(c.latency_ms||0);totalLatency+=latency;if(success)passed++;if(!success&&critical)criticalFailures++;if(c.tool_error)toolFailures++;if(human)humanReviews++;if(!success)failures.push({case_id:c.case_id||`CASE-${String(i+1).padStart(3,'0')}`,category:c.tool_error?'TOOL_FAILURE':(critical?'CRITICAL_FAILURE':'TASK_FAILURE'),severity:critical?'critical':'high',message:`Expected ${String(c.expected_output??'').trim()||'expected result'} but received ${String(c.actual_output??'').trim()||'different result'}.`});});
+ const reliability=Number(((passed/cases.length)*100).toFixed(1)),humanRate=Number(((humanReviews/cases.length)*100).toFixed(1)),avgLatency=Number((totalLatency/cases.length).toFixed(1));const reasons=[];
+ if(reliability<target)reasons.push(`Reliability ${reliability}% is below the required ${target}%.`);
+ if(criticalFailures>criticalLimit)reasons.push(`Critical failures ${criticalFailures} exceed the allowed ${criticalLimit}.`);
+ if(humanRate>humanLimit)reasons.push(`Human review rate ${humanRate}% exceeds the allowed ${humanLimit}%.`);
+ if(latencyLimit>0&&avgLatency>latencyLimit)reasons.push(`Average latency ${avgLatency} ms exceeds the allowed ${latencyLimit} ms.`);
+ lastReport={workflow_name:document.getElementById('name').value.trim()||'AI Workflow',verdict:reasons.length?'BLOCKED':'QUALIFIED',reliability_score:reliability,critical_failures:criticalFailures,tool_failures:toolFailures,human_review_rate:humanRate,average_latency_ms:avgLatency,total_test_cases:cases.length,passed_cases:passed,failures,reasons,policy:{target_reliability:target,maximum_critical_failures:criticalLimit,maximum_human_review_rate:humanLimit,maximum_average_latency_ms:latencyLimit}};
+ renderReport(lastReport);setStatus(`Qualification complete: ${lastReport.verdict}.`);
+}
+function renderReport(d){
+ document.getElementById('report').style.display='block';document.getElementById('download').style.display='inline-block';document.getElementById('reportName').textContent=d.workflow_name;document.getElementById('mReliability').textContent=d.reliability_score+'%';document.getElementById('mCritical').textContent=d.critical_failures;document.getElementById('mTools').textContent=d.tool_failures;document.getElementById('mHuman').textContent=d.human_review_rate+'%';document.getElementById('mLatency').textContent=d.average_latency_ms+' ms';const v=document.getElementById('verdict');v.textContent=d.verdict;v.className='verdict-title '+(d.verdict==='QUALIFIED'?'ok':'bad');document.getElementById('reasons').textContent=d.reasons.length?d.reasons.join(' '):'All configured qualification thresholds were satisfied.';const f=document.getElementById('failures');f.innerHTML='';(d.failures||[]).forEach(x=>{const el=document.createElement('div');el.className='failure';el.innerHTML='<b>'+esc(x.case_id)+'</b><div class="muted">'+esc(x.category)+' · '+esc(x.severity)+'</div><div style="margin-top:6px">'+esc(x.message)+'</div>';f.appendChild(el);});if(!d.failures.length)f.innerHTML='<div class="muted">No failures detected.</div>';document.getElementById('report').scrollIntoView({behavior:'smooth'});
+}
+function downloadReport(){if(!lastReport)return;const blob=new Blob([JSON.stringify(lastReport,null,2)],{type:'application/json'});const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='qualification-report.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+runQualification();
+</script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Workflow Qualification</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: #08090d;
+    color: #f4f4f5;
+}
+
+.container {
+    width: min(1100px, 92%);
+    margin: auto;
+}
+
+nav {
+    padding: 24px 0;
+    border-bottom: 1px solid #202127;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.hero {
+    padding: 80px 0 55px;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    border: 1px solid #30323b;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: #b7bac5;
+    font-size: 13px;
+    margin-bottom: 22px;
+}
+
+h1 {
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: .98;
+    margin: 0 auto 25px;
+    max-width: 900px;
+    letter-spacing: -3px;
+}
+
+.hero p {
+    color: #a5a8b3;
+    max-width: 700px;
+    margin: auto;
+    font-size: 19px;
+    line-height: 1.6;
+}
+
+.panel {
+    background: #101116;
+    border: 1px solid #252731;
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    color: #b7bac5;
+    margin: 18px 0 7px;
+    font-size: 14px;
+}
+
+input, textarea, select {
+    width: 100%;
+    background: #090a0e;
+    border: 1px solid #2a2d36;
+    color: white;
+    padding: 12px;
+    border-radius: 9px;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+button {
+    border: 0;
+    border-radius: 9px;
+    padding: 13px 18px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 18px;
+    margin-right: 8px;
+}
+
+.primary {
+    background: white;
+    color: black;
+}
+
+.secondary {
+    background: #22242c;
+    color: white;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.metric {
+    background: #090a0e;
+    border: 1px solid #252731;
+    padding: 18px;
+    border-radius: 12px;
+}
+
+.metric small {
+    color: #888b96;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.metric strong {
+    font-size: 25px;
+}
+
+.verdict {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #30323b;
+}
+
+.verdict strong {
+    font-size: 24px;
+}
+
+.failure {
+    border: 1px solid #3a2a2a;
+    background: #171012;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.muted {
+    color: #999ca7;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    color: #737681;
+    text-align: center;
+    padding: 60px 0;
+}
+
+@media (max-width: 800px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<div class="container">
+<div class="logo">AI Workflow Qualification</div>
+</div>
+</nav>
+
+<section class="hero">
+<div class="container">
+
+<div class="badge">
+AI DEPLOYMENT QUALIFICATION
+</div>
+
+<h1>
+Prove your AI agent is ready for production.
+</h1>
+
+<p>
+Test an AI workflow against measurable reliability,
+critical-failure and human-review thresholds before
+giving it production autonomy.
+</p>
+
+</div>
+</section>
+
+<main class="container">
+
+<div class="panel">
+
+<h2>Run a qualification</h2>
+
+<label>Workflow name</label>
+<input id="name" value="Customer Refund Agent">
+
+<label>Description</label>
+<textarea id="description">AI agent responsible for processing customer refund requests.</textarea>
+
+<div class="grid">
+
+<div>
+<label>Required reliability %</label>
+<input id="target" type="number" value="95">
+</div>
+
+<div>
+<label>Max critical failures</label>
+<input id="critical" type="number" value="0">
+</div>
+
+<div>
+<label>Max human review %</label>
+<input id="review" type="number" value="20">
+</div>
+
+<div>
+<label>Number of test cases</label>
+<input id="cases" type="number" value="10" min="1">
+</div>
+
+</div>
+
+<button class="primary" onclick="runDemo()">
+Run qualification
+</button>
+
+<button class="secondary" onclick="loadDemo()">
+Load real demo
+</button>
+
+</div>
+
+<div id="results" class="panel hidden">
+
+<h2>Qualification report</h2>
+
+<div class="grid">
+
+<div class="metric">
+<small>Reliability</small>
+<strong id="reliability">—</strong>
+</div>
+
+<div class="metric">
+<small>Critical failures</small>
+<strong id="criticalFailures">—</strong>
+</div>
+
+<div class="metric">
+<small>Tool failures</small>
+<strong id="toolFailures">—</strong>
+</div>
+
+<div class="metric">
+<small>Human review</small>
+<strong id="humanReview">—</strong>
+</div>
+
+</div>
+
+<div class="verdict">
+<div class="muted">DEPLOYMENT VERDICT</div>
+<strong id="verdict">—</strong>
+<p id="reason"></p>
+</div>
+
+<h3>Failures</h3>
+
+<div id="failures"></div>
+
+</div>
+
+</main>
+
+<footer>
+AI Workflow Qualification — deployment evidence for AI agents.
+</footer>
+
+<script>
+
+async function loadDemo() {
+    const results = document.getElementById("results");
+
+    try {
+        results.classList.remove("hidden");
+
+        const response = await fetch("/api/demo");
+
+        if (!response.ok) {
+            throw new Error(
+                "API returned HTTP " + response.status
+            );
+        }
+
+        const result = await response.json();
+
+        render(result);
+
+    } catch (error) {
+
+        results.classList.remove("hidden");
+
+        document.getElementById("verdict").innerText =
+            "ERROR";
+
+        document.getElementById("reason").innerText =
+            error.message;
+
+        document.getElementById("failures").innerHTML = "";
+    }
+}
+
+
+async function runDemo() {
+
+    const count =
+        Number(document.getElementById("cases").value) || 10;
+
+    const cases = [];
+
+    for (let i = 1; i <= count; i++) {
+
+        const success = i !== count;
+
+        cases.push({
+            case_id: "TEST-" + String(i).padStart(3, "0"),
+            expected_output: "PASS",
+            actual_output: success ? "PASS" : "FAIL",
+            success: success,
+            latency_ms: 800 + i * 50,
+            tool_error: false,
+            critical: !success,
+            human_review_required: i % 8 === 0,
+            estimated_cost_usd: 0.03
+        });
+    }
+
+    const payload = {
+
+        name:
+            document.getElementById("name").value,
+
+        description:
+            document.getElementById("description").value,
+
+        target_reliability:
+            Number(document.getElementById("target").value),
+
+        maximum_critical_failures:
+            Number(document.getElementById("critical").value),
+
+        maximum_human_review_rate:
+            Number(document.getElementById("review").value),
+
+        test_cases: cases
+    };
+
+    try {
+
+        const response = await fetch(
+            "/api/qualify",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "API returned HTTP " + response.status
+            );
+        }
+
+        const result = await response.json();
+
+        render(result);
+
+    } catch (error) {
+
+        document
+            .getElementById("results")
+            .classList
+            .remove("hidden");
+
+        document.getElementById("verdict").innerText =
+            "ERROR";
+
+        document.getElementById("reason").innerText =
+            error.message;
+    }
+}
+
+
+function render(result) {
+
+    document
+        .getElementById("results")
+        .classList
+        .remove("hidden");
+
+    document
+        .getElementById("reliability")
+        .innerText =
+        result.reliability_score + "%";
+
+    document
+        .getElementById("criticalFailures")
+        .innerText =
+        result.critical_failures;
+
+    document
+        .getElementById("toolFailures")
+        .innerText =
+        result.tool_failures;
+
+    document
+        .getElementById("humanReview")
+        .innerText =
+        result.human_review_rate + "%";
+
+    document
+        .getElementById("verdict")
+        .innerText =
+        result.verdict.replaceAll("_", " ");
+
+    document
+        .getElementById("reason")
+        .innerText =
+        result.reasons.join(" ");
+
+    const failures =
+        document.getElementById("failures");
+
+    failures.innerHTML = "";
+
+    if (!result.failures || result.failures.length === 0) {
+
+        failures.innerHTML =
+            "<p class='muted'>No failures detected.</p>";
+
+        return;
+    }
+
+    result.failures.forEach(failure => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "failure";
+
+        const title =
+            document.createElement("strong");
+
+        title.innerText =
+            failure.case_id +
+            " — " +
+            failure.severity;
+
+        const category =
+            document.createElement("p");
+
+        category.innerText =
+            failure.category;
+
+        const message =
+            document.createElement("span");
+
+        message.className = "muted";
+
+        message.innerText =
+            failure.message;
+
+        div.appendChild(title);
+        div.appendChild(category);
+        div.appendChild(message);
+
+        failures.appendChild(div);
+    });
+}
+
+
+loadDemo();
+
+</script>
+
+
+</body>
+</html>
