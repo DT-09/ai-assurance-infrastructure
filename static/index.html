@@ -1,58 +1,11 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="AI Assurance Infrastructure — independent assurance and control infrastructure for autonomous AI systems.">
-<meta name="robots" content="index,follow">
-<title>AI Assurance Infrastructure</title>
-<link rel="stylesheet" href="/static/site.css">
-</head>
-<body>
-<header class="site-header">
-  <a class="wordmark" href="/"><span class="wordmark-mark">A</span><span>AI Assurance Infrastructure</span></a>
-  <nav>
-    <a href="#platform">Platform</a><a href="#protocol">Protocol</a><a href="#enterprise">Enterprise</a><a href="#security">Security</a>
-    <a href="/pricing">Plans</a><a class="nav-button" href="/console">Control Plane</a>
-  </nav>
-</header>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#060914"><meta name="description" content="AI Assurance Infrastructure — vendor-neutral control plane for identity, evidence, trust and enforcement."><title>AI Assurance Infrastructure</title><link rel="stylesheet" href="./site.css"></head><body>
+<nav class="nav"><div class="container nav-inner"><a class="brand" href="./index.html"><span class="mark"></span><span>AI Assurance</span></a><div class="nav-links"><a href="#platform">Platform</a><a href="#assurance">Assurance</a><a href="#protocol">Protocol</a><a href="./pricing.html">Pricing</a></div><div class="nav-cta"><a class="btn" href="./protocol.html">Protocol</a><a class="btn primary" href="./console.html">Open Control Plane</a></div></div></nav>
 <main>
-<section class="hero-shell">
-  <div class="hero-copy">
-    <div class="eyebrow">AI Assurance Infrastructure</div>
-    <h1>Trust and control for autonomous AI.</h1>
-    <p class="hero-lead">An independent control plane for identity, authority, evidence, policy, continuous assurance and runtime enforcement across AI systems.</p>
-    <div class="hero-actions"><a class="button dark" href="/pricing">View Plans</a><a class="button light" href="/protocol">Read Protocol v1</a></div>
-    <div class="hero-note">Vendor-neutral · API-first · Machine-verifiable · Designed for production</div>
-  </div>
-  <div class="hero-diagram" aria-label="AI assurance lifecycle">
-    <div class="diagram-top"><span>AI SYSTEM</span><strong>Agent / Model / Workflow</strong></div>
-    <div class="diagram-line"></div>
-    <div class="diagram-grid"><div><b>IDENTITY</b><span>Asset · version · owner</span></div><div><b>AUTHORITY</b><span>Tools · data · actions</span></div><div><b>EVIDENCE</b><span>Evaluation · provenance</span></div><div><b>POLICY</b><span>Requirements · thresholds</span></div></div>
-    <div class="diagram-line"></div>
-    <div class="diagram-bottom"><span>CONTINUOUS TRUST</span><strong>ASSURED · DEGRADED · BLOCKED</strong></div>
-    <div class="diagram-line"></div>
-    <div class="diagram-decision"><span>DEPLOYMENT / RUNTIME</span><strong>ALLOW · REVIEW · DENY</strong></div>
-  </div>
-</section>
-<section class="section" id="platform">
-  <div class="section-intro"><div class="eyebrow">The control plane</div><h2>One assurance layer across the AI stack.</h2><p>AI systems change through models, prompts, tools, dependencies, permissions and environments. Assurance must persist across those changes.</p></div>
-  <div class="feature-grid">
-    <article><span class="index">01</span><h3>Identity & registry</h3><p>Give every AI asset and exact version a durable identity, ownership record and environment context.</p></article>
-    <article><span class="index">02</span><h3>Dependency graph</h3><p>Connect models, tools, services, data and authority relationships so impact is inspectable.</p></article>
-    <article><span class="index">03</span><h3>Evidence & provenance</h3><p>Bind evaluation evidence to the exact asset version and preserve machine-verifiable lineage.</p></article>
-    <article><span class="index">04</span><h3>Policy & trust</h3><p>Turn organizational requirements into deterministic assurance states and auditable transitions.</p></article>
-    <article><span class="index">05</span><h3>Enforcement</h3><p>Connect assurance state to deployment and runtime decisions instead of stopping at reporting.</p></article>
-    <article><span class="index">06</span><h3>Trust Passport</h3><p>Export portable, verifiable assurance history for systems, platforms and enterprise verification.</p></article>
-  </div>
-</section>
-<section class="band" id="protocol"><div><div class="eyebrow">Open protocol</div><h2>AI Assurance Protocol v1</h2><p>A vendor-neutral machine language for AI identity, evidence, assurance state and enforcement.</p></div><a class="button light" href="/protocol">Explore the specification</a></section>
-<section class="section split" id="enterprise">
-  <div><div class="eyebrow">Enterprise</div><h2>Designed to sit above providers, frameworks and clouds.</h2><p>The control plane does not require an enterprise to standardize on one model provider or agent framework. It establishes a common assurance contract across the systems already in use.</p></div>
-  <div class="contract"><div><b>WHAT IS OPERATING?</b><span>Identity, version, environment</span></div><div><b>WHAT CAN IT DO?</b><span>Authority, tools, data, actions</span></div><div><b>WHY TRUST IT?</b><span>Evidence, policy, provenance</span></div><div><b>WHAT HAPPENS IF IT CHANGES?</b><span>Re-evaluation and enforcement</span></div></div>
-</section>
-<section class="section security" id="security"><div class="eyebrow">Security posture</div><h2>Evidence-backed, auditable, enforceable.</h2><div class="security-grid"><span>Tenant-scoped control plane</span><span>API-key authentication</span><span>Canonical evidence hashing</span><span>Audit events</span><span>Production PostgreSQL path</span><span>Runtime enforcement decisions</span></div></section>
-<section class="closing"><div class="eyebrow">Start with one system</div><h2>Establish a verifiable operating trust state for your AI.</h2><p>Use the control plane to register an asset, define policy, evaluate evidence and connect trust to operational control.</p><a class="button dark" href="/console">Open the Control Plane</a></section>
-</main>
-<footer><span>AI Assurance Infrastructure</span><span>AI Assurance Protocol v1.0.0</span><span><a href="/protocol">Protocol</a> · <a href="/console">Control Plane</a></span></footer>
-</body>
-</html>
+<section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow">AI assurance control plane</div><h1 style="margin-top:18px">Make AI <span>trustable by infrastructure.</span></h1><p class="lead" style="margin-top:24px">A vendor-neutral control plane for AI identity, evidence, policy, continuous assurance and runtime enforcement.</p><div class="hero-actions"><a class="btn primary" href="./console.html">Explore the control plane →</a><a class="btn" href="#assurance">See how assurance works</a></div><div class="hero-note"><span class="pulse"></span><span>Machine-verifiable trust · deterministic control · continuous state</span></div></div>
+<div class="hero-visual reveal"><div class="visual-top"><span class="mono">ASSURANCE / LIVE MODEL</span><span class="status"><span class="pulse"></span> SYSTEM OPERATIONAL</span></div><div class="assure-core"><div class="core-label"><strong>ASSURED</strong><small>TRUST STATE · 98.7</small></div></div><div class="node a"><b>IDENTITY</b><span>agent / v4.2.1</span></div><div class="node b"><b>EVIDENCE</b><span>184 verified records</span></div><div class="node c"><b>POLICY</b><span>17 active controls</span></div><div class="node d"><b>RUNTIME</b><span>ALLOW</span></div><i class="connector c1"></i><i class="connector c2"></i><i class="connector c3"></i><i class="connector c4"></i></div></div></section>
+<section class="section" id="platform"><div class="container"><div class="metrics reveal"><div class="metric"><strong>01</strong><span>Durable AI identity</span></div><div class="metric"><strong>02</strong><span>Evidence-backed trust</span></div><div class="metric"><strong>03</strong><span>Policy-driven control</span></div><div class="metric"><strong>04</strong><span>Runtime enforcement</span></div></div></div></section>
+<section class="section" id="assurance"><div class="container"><div class="section-head reveal"><div><div class="eyebrow">The control layer</div><h2 style="margin-top:14px">One assurance fabric.<br>Every AI system.</h2></div><p>Register an AI asset, connect its dependencies, attach evidence, compute trust and turn that state into an operational control decision.</p></div><div class="arch"><div class="arch-list reveal"><div class="arch-item active" data-key="registry"><strong>01 · Identity & Registry</strong><span>Who is this system?</span></div><div class="arch-item" data-key="graph"><strong>02 · Dependency Graph</strong><span>What does it depend on?</span></div><div class="arch-item" data-key="evidence"><strong>03 · Evidence Fabric</strong><span>Why should we trust it?</span></div><div class="arch-item" data-key="trust"><strong>04 · Policy & Trust</strong><span>What is its current posture?</span></div><div class="arch-item" data-key="enforcement"><strong>05 · Enforcement</strong><span>What may it do now?</span></div></div><div class="arch-detail reveal"><div class="eyebrow" id="archTag">01 / IDENTITY</div><h3 id="archTitle">AI Asset Registry</h3><p class="detail-copy" id="archCopy">Give every autonomous AI system a durable identity across versions, environments and owners. Identity becomes the anchor for every assurance record.</p><div class="detail-points" id="archPoints"><div class="point">Immutable asset/version lineage</div><div class="point">Environment and ownership context</div><div class="point">Machine-readable identity</div></div></div></div></div></section>
+<section class="section"><div class="container"><div class="section-head reveal"><div><div class="eyebrow">Interactive assurance</div><h2 style="margin-top:14px">Trust is a state,<br>not a screenshot.</h2></div><p>See how a machine-verifiable trust state becomes a deployment and runtime decision.</p></div><div class="simulator reveal"><div class="sim-head"><div><strong>Customer Support Agent</strong><div class="muted mono" style="font-size:10px;margin-top:3px">production · v4.2.1 · autonomous workflow</div></div><div class="state-buttons"><button data-state="ASSURED" class="active">ASSURED</button><button data-state="DEGRADED">DEGRADED</button><button data-state="BLOCKED">BLOCKED</button></div></div><div class="sim-body"><div class="sim-panel"><div class="agent-title"><div class="agent-icon">AI</div><div><strong>Current evidence</strong><span>Continuous evaluation stream</span></div></div><div class="bars"><div class="bar-row"><span>Reliability</span><div class="bar"><i style="--w:99%"></i></div><b>99%</b></div><div class="bar-row"><span>Security</span><div class="bar"><i style="--w:98%"></i></div><b>98%</b></div><div class="bar-row"><span>Behavior</span><div class="bar"><i style="--w:97%"></i></div><b>97%</b></div><div class="bar-row"><span>Policy</span><div class="bar"><i style="--w:100%"></i></div><b>PASS</b></div></div></div><div class="sim-panel trust"><div class="trust-ring" id="trustRing"><div class="trust-value"><strong id="trustScore">98.7</strong><span>ASSURANCE</span></div></div><div class="decision" id="decision">ALLOW · DEPLOYMENT AUTHORIZED</div></div></div></div></div></section>
+<section class="section" id="protocol"><div class="container"><div class="section-head reveal"><div><div class="eyebrow">Interoperability layer</div><h2 style="margin-top:14px">Built to become<br>a shared protocol.</h2></div><p>Portable identity, evidence, trust state and enforcement signals across providers, frameworks and clouds.</p></div><div class="protocol-grid"><div class="proto-card reveal"><span class="icon">01 / IDENTITY</span><h3>AI Trust Passport</h3><p>Machine-verifiable identity and assurance history for an AI asset and its exact version.</p></div><div class="proto-card reveal"><span class="icon">02 / EVIDENCE</span><h3>Canonical Evidence</h3><p>Portable records with integrity, provenance and deterministic verification.</p></div><div class="proto-card reveal"><span class="icon">03 / CONTROL</span><h3>Enforcement Signals</h3><p>Standardized allow, review and deny decisions that downstream systems can consume.</p></div></div></div></section>
+<section class="cta"><div class="container"><div class="cta-box reveal"><div><div class="eyebrow">Operate with evidence</div><h2 style="margin-top:14px">Assurance belongs<br>in the control plane.</h2><p class="muted" style="max-width:600px">Build a durable trust layer between AI systems and the environments where they are deployed.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn primary" href="./console.html">Open Control Plane</a><a class="btn" href="./protocol.html">Read Protocol</a></div></div></div></section>
+</main><footer class="footer"><div class="container footer-inner"><span>AI Assurance Infrastructure · Control Plane v4.0.0</span><div class="footer-links"><a href="./protocol.html">Protocol</a><a href="./pricing.html">Pricing</a><a href="./console.html">Workspace</a></div></div></footer><script src="./site.js"></script></body></html>
