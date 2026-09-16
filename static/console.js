@@ -1,21 +1,10 @@
 const state = {
     apiKey: sessionStorage.getItem("aai_api_key") || "",
     assets: [],
-    selected: null,
-    trust: {},
-    evidence: {},
-    loading: false
+    policies: []
 };
 
 const $ = (id) => document.getElementById(id);
-
-function toast(message) {
-    const el = $("toast");
-    if (!el) return;
-    el.textContent = message;
-    el.classList.add("show");
-    setTimeout(() => el.classList.remove("show"), 2400);
-}
 
 function esc(value) {
     return String(value ?? "").replace(
@@ -30,45 +19,90 @@ function esc(value) {
     );
 }
 
-function stateBadge(value) {
-    const normalized = String(value || "").toUpperCase();
+function toast(message) {
+    const el = $("toast");
+    if (!el) return;
 
-    if (normalized === "ASSURED") {
-        return '<span class="badge ASSURED">ASSURED</span>';
-    }
+    el.textContent = message;
+    el.classList.add("show");
 
-    if (normalized === "DEGRADED") {
-        return '<span class="badge DEGRADED">DEGRADED</span>';
-    }
-
-    if (normalized === "BLOCKED") {
-        return '<span class="badge BLOCKED">BLOCKED</span>';
-    }
-
-    if (normalized === "OPERATIONAL" || normalized === "READY" || normalized === "ENFORCED") {
-        return '<span class="badge ASSURED">' + esc(normalized) + "</span>";
-    }
-
-    return '<span class="badge">' + esc(value || "UNKNOWN") + "</span>";
+    setTimeout(() => {
+        el.classList.remove("show");
+    }, 2800);
 }
 
-function setText(id, value) {
+function openModal(id) {
     const el = $(id);
-    if (el) el.textContent = value;
+    if (el) el.classList.add("open");
 }
 
-function setHTML(id, value) {
+function closeModal(id) {
     const el = $(id);
-    if (el) el.innerHTML = value;
+    if (el) el.classList.remove("open");
 }
 
-function setLoading(id, text = "Loading…") {
-    const el = $(id);
-    if (el) el.textContent = text;
+function setView(view) {
+    document.querySelectorAll(".view").forEach((v) => {
+        v.classList.remove("active");
+    });
+
+    const target = $("view-" + view);
+
+    if (target) {
+        target.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav button").forEach((b) => {
+        b.classList.toggle(
+            "active",
+            b.dataset.view === view
+        );
+    });
+
+    const crumb = $("crumb");
+
+    if (crumb) {
+        crumb.textContent =
+            "Control Plane / " +
+            view.replace(/^./, (x) => x.toUpperCase());
+    }
+
+    if (view === "assets") {
+        loadAssets();
+    }
+
+    if (view === "policies") {
+        loadPolicies();
+    }
 }
+
+document.querySelectorAll(".nav button").forEach((button) => {
+    button.addEventListener("click", () => {
+        setView(button.dataset.view);
+    });
+});
+
+document.querySelectorAll("[data-action]").forEach((el) => {
+    el.addEventListener("click", () => {
+        const action = el.dataset.action;
+
+        if (action === "open-asset") openModal("assetModal");
+        if (action === "open-policy") openModal("policyModal");
+        if (action === "close-asset") closeModal("assetModal");
+        if (action === "close-policy") closeModal("policyModal");
+        if (action === "save-key") saveKey();
+        if (action === "clear-key") clearKey();
+        if (action === "bootstrap") bootstrap();
+        if (action === "checkout") checkout();
+        if (action === "create-asset") createAsset();
+        if (action === "create-policy") createPolicy();
+    });
+});
 
 async function api(path, options = {}) {
-    const headers = { ...(options.headers || {}) };
+    const headers = {
+        ...(options.headers || {})
+    };
 
     if (state.apiKey) {
         headers["X-API-Key"] = state.apiKey;
@@ -76,7 +110,8 @@ async function api(path, options = {}) {
 
     const response = await fetch(path, {
         ...options,
-        headers
+        headers,
+        cache: "no-store"
     });
 
     let data = null;
@@ -98,543 +133,408 @@ async function api(path, options = {}) {
     return data;
 }
 
-function setView(view) {
-    document.querySelectorAll(".view").forEach((element) => {
-        element.classList.remove("active");
-    });
-
-    const target = $(`view-${view}`);
-
-    if (target) {
-        target.classList.add("active");
-    }
-
-    document.querySelectorAll("nav button").forEach((button) => {
-        button.classList.toggle("active", button.dataset.view === view);
-    });
-
-    setText(
-        "crumb",
-        "Control Plane / " +
-        view.replace(/^./, (character) => character.toUpperCase())
-    );
-
-    if (view === "overview") {
-        loadOverview();
-    }
-
-    if (view === "assets") {
-        loadAssets();
-    }
-
-    if (view === "graph") {
-        loadGraph();
-    }
-
-    if (view === "protocol") {
-        loadProtocol();
-    }
-
-    if (view === "evidence") {
-        loadEvidence();
-    }
-
-    if (view === "assurance") {
-        loadTrust();
-    }
-}
-
-document.querySelectorAll("nav button").forEach((button) => {
-    button.onclick = () => setView(button.dataset.view);
-});
-
-document.querySelectorAll("[data-action]").forEach((button) => {
-    button.onclick = () => {
-        const action = button.dataset.action;
-
-        if (action === "save-key") {
-            saveKey();
-        }
-
-        if (action === "clear-key") {
-            clearKey();
-        }
-
-        if (action === "refresh") {
-            refreshAll();
-        }
-    };
-});
-
 async function init() {
-    setText("serviceStatus", "Checking…");
-
     try {
         const health = await api("/api/health");
 
-        setText("version", "v" + (health.version || "—"));
+        if ($("version")) {
+            $("version").textContent =
+                "v" + (health.version || "3.1.0");
+        }
+
+        if ($("envPill")) {
+            $("envPill").textContent =
+                health.environment || "Production";
+        }
 
         const readiness = await api("/api/readiness");
 
-        setText(
-            "serviceStatus",
-            readiness.status === "ready"
-                ? "Operational"
-                : "Degraded"
-        );
-
-        updatePlatformStatus(readiness);
-    } catch (error) {
-        setText("serviceStatus", "Unavailable");
-        updatePlatformStatus(null, error.message);
-    }
-
-    if (state.apiKey) {
-        const keyInput = $("apiKey");
-
-        if (keyInput) {
-            keyInput.value = state.apiKey;
+        if ($("backend")) {
+            $("backend").textContent =
+                "Persistence: " +
+                (
+                    readiness.database_backend ||
+                    "Operational"
+                );
         }
 
-        setText("keyStatus", "Workspace credential loaded.");
-    }
-
-    await loadProtocol();
-
-    if (state.apiKey) {
-        await refreshAll();
-    } else {
-        showDisconnectedState();
-    }
-}
-
-async function refreshAll() {
-    await Promise.allSettled([
-        loadAssets(),
-        loadOverview(),
-        loadGraph(),
-        loadProtocol()
-    ]);
-}
-
-function showDisconnectedState() {
-    setText("metricAssets", "—");
-    setText("metricState", "—");
-    setText("metricEvidence", "—");
-
-    setHTML(
-        "assetCards",
-        '<div class="asset-card">' +
-            "<h3>Connect workspace</h3>" +
-            "<p>Add an API key under Workspace to load registered AI systems.</p>" +
-        "</div>"
-    );
-
-    setText("trustHeadline", "Workspace not connected");
-    setText(
-        "trustReasons",
-        "Connect a workspace credential to retrieve assurance state."
-    );
-}
-
-async function loadOverview() {
-    if (!state.apiKey) {
-        showDisconnectedState();
-        return;
-    }
-
-    try {
-        const assetsResponse = await api("/v1/control/assets");
-        const assets = assetsResponse.assets || [];
-
-        state.assets = assets;
-
-        setText("metricAssets", assets.length);
-
-        let assured = 0;
-        let degraded = 0;
-        let blocked = 0;
-
-        const trustResults = await Promise.allSettled(
-            assets.map((asset) =>
-                api(`/v1/control/assets/${asset.id}/trust`)
-            )
-        );
-
-        trustResults.forEach((result) => {
-            if (result.status !== "fulfilled") return;
-
-            const trust = result.value;
-            const currentState = String(trust.state || "").toUpperCase();
-
-            if (currentState === "ASSURED") assured++;
-            if (currentState === "DEGRADED") degraded++;
-            if (currentState === "BLOCKED") blocked++;
-        });
-
-        const totalTrustStates = assured + degraded + blocked;
-
-        if (totalTrustStates === 0) {
-            setText("metricState", "No state");
-        } else if (blocked > 0) {
-            setText("metricState", `${blocked} BLOCKED`);
-        } else if (degraded > 0) {
-            setText("metricState", `${degraded} DEGRADED`);
-        } else {
-            setText("metricState", `${assured} ASSURED`);
+        if ($("serviceStatus")) {
+            $("serviceStatus").textContent =
+                readiness.status === "ready"
+                    ? "Operational"
+                    : "Degraded";
         }
 
-        if (assets.length) {
-            const evidenceResults = await Promise.allSettled(
-                assets.map((asset) =>
-                    api(`/v1/control/assets/${asset.id}/evidence`)
-                )
-            );
+        renderHealth(readiness);
 
-            let evidenceCount = 0;
-
-            evidenceResults.forEach((result) => {
-                if (result.status !== "fulfilled") return;
-                evidenceCount += (result.value.evidence || []).length;
-            });
-
-            setText("metricEvidence", evidenceCount);
-        } else {
-            setText("metricEvidence", "0");
+    } catch (error) {
+        if ($("serviceStatus")) {
+            $("serviceStatus").textContent = "Unavailable";
         }
 
-        renderAssetCards(assets, trustResults);
-    } catch (error) {
-        toast(error.message);
-        setText("metricAssets", "—");
-        setText("metricState", "Unavailable");
-        setText("metricEvidence", "—");
-    }
-}
-
-async function loadAssets() {
-    if (!state.apiKey) {
-        showDisconnectedState();
-        return;
-    }
-
-    try {
-        const data = await api("/v1/control/assets");
-
-        state.assets = data.assets || [];
-
-        setText("metricAssets", state.assets.length);
-
-        const trustResults = await Promise.allSettled(
-            state.assets.map((asset) =>
-                api(`/v1/control/assets/${asset.id}/trust`)
-            )
-        );
-
-        renderAssetCards(state.assets, trustResults);
-    } catch (error) {
-        toast(error.message);
-
-        setHTML(
-            "assetCards",
-            '<div class="asset-card">' +
-                "<h3>Unable to load assets</h3>" +
-                `<p>${esc(error.message)}</p>` +
-            "</div>"
-        );
-    }
-}
-
-function renderAssetCards(assets, trustResults = []) {
-    if (!assets.length) {
-        setHTML(
-            "assetCards",
-            '<div class="asset-card">' +
-                "<h3>No assets registered</h3>" +
-                "<p>Register an AI system through the control API.</p>" +
-            "</div>"
-        );
-        return;
-    }
-
-    setHTML(
-        "assetCards",
-        assets.map((asset, index) => {
-            const result = trustResults[index];
-
-            let trustState = "UNKNOWN";
-
-            if (result?.status === "fulfilled") {
-                trustState = result.value?.state || "UNKNOWN";
-            }
-
-            return `
-                <article class="asset-card" onclick="selectAsset('${esc(asset.id)}')">
-                    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
-                        <div>
-                            <h3>${esc(asset.name)}</h3>
-                            <p>
-                                ${esc(asset.asset_type)} ·
-                                ${esc(asset.environment)} ·
-                                ${esc(asset.criticality)}
-                            </p>
-                        </div>
-                        ${stateBadge(trustState)}
-                    </div>
-
-                    <span class="badge">${esc(asset.id)}</span>
-                </article>
-            `;
-        }).join("")
-    );
-}
-
-async function selectAsset(id) {
-    state.selected = id;
-
-    setView("assurance");
-
-    await Promise.allSettled([
-        loadTrust(),
-        loadEvidence()
-    ]);
-}
-
-async function loadTrust() {
-    if (!state.selected) {
-        setText("trustHeadline", "Select an AI asset");
-        setText(
-            "trustReasons",
-            "Choose an asset from AI Assets to inspect its current assurance state."
-        );
-        return;
-    }
-
-    try {
-        const trust = await api(
-            `/v1/control/assets/${state.selected}/trust`
-        );
-
-        state.trust = trust;
-
-        const score =
-            typeof trust.score === "number"
-                ? Math.round(trust.score * 100)
-                : null;
-
-        setText("metricState", trust.state || "UNKNOWN");
-        setText("trustHeadline", trust.state || "UNKNOWN");
-
-        if (score !== null) {
-            setText("trustRing", `${score}%`);
-        } else {
-            setText("trustRing", "—");
+        if ($("backend")) {
+            $("backend").textContent =
+                "Persistence: unavailable";
         }
 
-        setText(
-            "trustReasons",
-            Array.isArray(trust.reasons)
-                ? trust.reasons.join(" ")
-                : "Current trust state retrieved from the assurance engine."
-        );
-
-        setHTML(
-            "trustTable",
-            `
-            <tr>
-                <td>Reliability</td>
-                <td>${esc(trust.reliability ?? "—")}</td>
-                <td>
-                    ${
-                        typeof trust.reliability === "number"
-                            ? Math.round(trust.reliability * 100) + "%"
-                            : "—"
-                    }
-                </td>
-            </tr>
-            <tr>
-                <td>Evidence</td>
-                <td>${esc(trust.evidence_state ?? "—")}</td>
-                <td>—</td>
-            </tr>
-            <tr>
-                <td>Dependencies</td>
-                <td>${esc(trust.dependency_state ?? "—")}</td>
-                <td>—</td>
-            </tr>
-            <tr>
-                <td>Policy</td>
-                <td>${esc(trust.policy_state ?? "—")}</td>
-                <td>—</td>
-            </tr>
-            <tr>
-                <td>Epoch</td>
-                <td>Persistent</td>
-                <td>${esc(trust.epoch ?? "—")}</td>
-            </tr>
-            `
-        );
-    } catch (error) {
-        setText("trustHeadline", "No trust state");
-        setText("trustRing", "—");
-        setText("trustReasons", error.message);
-
-        setHTML(
-            "trustTable",
-            `
-            <tr>
-                <td colspan="3" class="empty">
-                    No computed assurance state is available for this asset.
-                </td>
-            </tr>
-            `
-        );
-    }
-}
-
-async function loadEvidence() {
-    if (!state.selected) {
-        setText("metricEvidence", "—");
-        return;
+        if ($("healthTable")) {
+            $("healthTable").innerHTML =
+                `<tr>
+                    <td colspan="4" class="empty">
+                        ${esc(error.message)}
+                    </td>
+                </tr>`;
+        }
     }
 
-    try {
-        const data = await api(
-            `/v1/control/assets/${state.selected}/evidence`
-        );
-
-        const evidence = data.evidence || [];
-
-        setText("metricEvidence", evidence.length);
-
-        setHTML(
-            "evidenceTable",
-            evidence.length
-                ? evidence.map((item) => `
-                    <tr>
-                        <td>${esc(item.id)}</td>
-                        <td>${esc(item.evidence_type)}</td>
-                        <td>${esc(item.result)}</td>
-                        <td>${esc(item.source)}</td>
-                        <td class="mono">
-                            ${esc(
-                                String(item.provenance_hash || "").slice(0, 18)
-                            )}…
-                        </td>
-                    </tr>
-                `).join("")
-                : '<tr><td colspan="5" class="empty">No evidence recorded.</td></tr>'
-        );
-    } catch (error) {
-        setHTML(
-            "evidenceTable",
-            `
-            <tr>
-                <td colspan="5" class="empty">
-                    Unable to load evidence.
-                </td>
-            </tr>
-            `
-        );
-    }
-}
-
-async function loadGraph() {
-    if (!state.apiKey) {
-        setText("graphSummary", "Connect workspace");
-        return;
-    }
-
-    try {
-        const graph = await api("/v1/control/graph");
-
-        const nodes = graph.nodes || [];
-        const edges = graph.edges || [];
-
-        setText(
-            "graphSummary",
-            `${nodes.length} nodes · ${edges.length} relationships`
-        );
-
-        setHTML(
-            "graphNodes",
-            nodes.length
-                ? nodes.map((node) => `
-                    <div class="node">
-                        <b>${esc(node.label)}</b>
-                        <span>${esc(node.id)}</span>
-                    </div>
-                `).join("")
-                : '<div class="empty">No dependency relationships registered.</div>'
-        );
-    } catch (error) {
-        setText("graphSummary", "Unavailable");
-        setHTML(
-            "graphNodes",
-            `<div class="empty">${esc(error.message)}</div>`
-        );
-    }
-}
-
-async function loadProtocol() {
     try {
         const manifest = await api(
             "/v1/control/protocol/manifest"
         );
 
-        setText(
-            "manifest",
-            JSON.stringify(manifest, null, 2)
-        );
+        if ($("manifest")) {
+            $("manifest").textContent =
+                JSON.stringify(manifest, null, 2);
+        }
+
+        if ($("protocolName")) {
+            $("protocolName").textContent =
+                manifest.protocol ||
+                "AI Assurance Protocol";
+        }
+
+        if ($("protocolVersion")) {
+            $("protocolVersion").textContent =
+                "Version " +
+                (manifest.version || "1.0");
+        }
+
     } catch (error) {
-        setText("manifest", error.message);
+        if ($("manifest")) {
+            $("manifest").textContent =
+                error.message;
+        }
+    }
+
+    if (state.apiKey) {
+        if ($("apiKey")) {
+            $("apiKey").value = state.apiKey;
+        }
+
+        if ($("keyStatus")) {
+            $("keyStatus").textContent =
+                "Workspace credential loaded.";
+        }
+
+        await loadWorkspace();
     }
 }
 
-function updatePlatformStatus(readiness, errorMessage = "") {
-    const status = readiness?.status || "unavailable";
+function renderHealth(readiness) {
     const checks = readiness?.checks || {};
 
-    const mappings = {
-        database: "databaseStatus",
-        audit_chain: "auditStatus",
-        outbox: "outboxStatus",
-        runtime_control: "runtimeStatus"
-    };
+    const rows = Object.entries(checks)
+        .map(([name, value]) => {
+            const status =
+                String(value?.status || "unknown").toUpperCase();
 
-    Object.entries(mappings).forEach(([key, elementId]) => {
-        const check = checks[key];
+            const good =
+                status === "OK" ||
+                status === "READY" ||
+                status === "HEALTHY";
 
-        if (check) {
-            setText(
-                elementId,
-                check.status === "ok"
-                    ? "Operational"
-                    : String(check.status)
-            );
-        } else if (errorMessage) {
-            setText(elementId, "Unavailable");
-        }
-    });
+            return `
+                <tr>
+                    <td>${esc(name)}</td>
+                    <td>
+                        <span class="badge ${good ? "ASSURED" : "BLOCKED"}">
+                            ${esc(status)}
+                        </span>
+                    </td>
+                    <td>${esc(value?.backend || "—")}</td>
+                    <td>Persistent subsystem</td>
+                </tr>
+            `;
+        })
+        .join("");
 
-    const platformMessage =
-        status === "ready"
-            ? "All control-plane health checks operational."
-            : errorMessage || "Control-plane readiness degraded.";
-
-    setText("platformStatus", platformMessage);
+    if ($("healthTable")) {
+        $("healthTable").innerHTML =
+            rows ||
+            `<tr>
+                <td colspan="4" class="empty">
+                    Control plane operational.
+                </td>
+            </tr>`;
+    }
 }
 
-async function saveKey() {
-    const input = $("apiKey");
+async function loadWorkspace() {
+    try {
+        const organization = await api(
+            "/v1/control/organization"
+        );
 
-    if (!input) return;
+        toast(
+            "Connected to " +
+            (organization.name || "workspace")
+        );
 
-    const key = input.value.trim();
+        await Promise.all([
+            loadAssets(),
+            loadPolicies(),
+            loadBilling()
+        ]);
+
+    } catch (error) {
+        if ($("keyStatus")) {
+            $("keyStatus").textContent =
+                error.message;
+        }
+    }
+}
+
+async function loadAssets() {
+    if (!state.apiKey) {
+        if ($("assetTable")) {
+            $("assetTable").innerHTML =
+                `<tr>
+                    <td colspan="6" class="empty">
+                        Connect a workspace to view assets.
+                    </td>
+                </tr>`;
+        }
+
+        return;
+    }
+
+    try {
+        const data = await api(
+            "/v1/control/assets"
+        );
+
+        state.assets = data.assets || [];
+
+        if ($("assetCount")) {
+            $("assetCount").textContent =
+                state.assets.length + " assets";
+        }
+
+        if ($("metricAssets")) {
+            $("metricAssets").textContent =
+                state.assets.length;
+        }
+
+        if (!state.assets.length) {
+            if ($("assetTable")) {
+                $("assetTable").innerHTML =
+                    `<tr>
+                        <td colspan="6" class="empty">
+                            No AI assets registered.
+                        </td>
+                    </tr>`;
+            }
+
+            return;
+        }
+
+        if ($("assetTable")) {
+            $("assetTable").innerHTML =
+                state.assets.map((asset) => `
+                    <tr>
+                        <td>
+                            <strong>${esc(asset.name)}</strong>
+                        </td>
+                        <td>${esc(asset.asset_type)}</td>
+                        <td>${esc(asset.version || "—")}</td>
+                        <td>${esc(asset.environment || "—")}</td>
+                        <td>
+                            <span class="badge">
+                                UNKNOWN
+                            </span>
+                        </td>
+                        <td>
+                            ${esc(asset.id)}
+                        </td>
+                    </tr>
+                `).join("");
+        }
+
+    } catch (error) {
+        if ($("assetTable")) {
+            $("assetTable").innerHTML =
+                `<tr>
+                    <td colspan="6" class="empty">
+                        ${esc(error.message)}
+                    </td>
+                </tr>`;
+        }
+    }
+}
+
+async function loadPolicies() {
+    if (!state.apiKey) {
+        if ($("policyTable")) {
+            $("policyTable").innerHTML =
+                `<tr>
+                    <td colspan="4" class="empty">
+                        Connect a workspace to view policies.
+                    </td>
+                </tr>`;
+        }
+
+        return;
+    }
+
+    try {
+        const data = await api(
+            "/v1/control/policies"
+        );
+
+        state.policies = data.policies || [];
+
+        if ($("policyTable")) {
+            $("policyTable").innerHTML =
+                state.policies.length
+                    ? state.policies.map((policy) => `
+                        <tr>
+                            <td>${esc(policy.name)}</td>
+                            <td>${esc(policy.version)}</td>
+                            <td>${policy.rules?.length || 0}</td>
+                            <td>Workspace</td>
+                        </tr>
+                    `).join("")
+                    : `<tr>
+                        <td colspan="4" class="empty">
+                            No policies registered.
+                        </td>
+                    </tr>`;
+        }
+
+    } catch (error) {
+        if ($("policyTable")) {
+            $("policyTable").innerHTML =
+                `<tr>
+                    <td colspan="4" class="empty">
+                        ${esc(error.message)}
+                    </td>
+                </tr>`;
+        }
+    }
+}
+
+async function createAsset() {
+    if (!state.apiKey) {
+        return toast(
+            "Connect a workspace first."
+        );
+    }
+
+    const projectId =
+        $("newAssetProject")?.value.trim();
+
+    if (!projectId) {
+        return toast(
+            "Project ID is required."
+        );
+    }
+
+    try {
+        const data = await api(
+            "/v1/control/assets",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    name:
+                        $("newAssetName")
+                            ?.value.trim(),
+                    asset_type:
+                        $("newAssetType")
+                            ?.value.trim() ||
+                        "agent",
+                    owner:
+                        $("newAssetOwner")
+                            ?.value.trim() ||
+                        null
+                })
+            }
+        );
+
+        closeModal("assetModal");
+
+        toast(
+            "Asset registered: " +
+            (data.name || "AI asset")
+        );
+
+        await loadAssets();
+
+    } catch (error) {
+        toast(error.message);
+    }
+}
+
+async function createPolicy() {
+    if (!state.apiKey) {
+        return toast(
+            "Connect a workspace first."
+        );
+    }
+
+    let rules;
+
+    try {
+        rules = JSON.parse(
+            $("newPolicyRules").value
+        );
+    } catch {
+        return toast(
+            "Invalid rules JSON."
+        );
+    }
+
+    try {
+        await api(
+            "/v1/control/policies",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    name:
+                        $("newPolicyName")
+                            ?.value.trim(),
+                    rules
+                })
+            }
+        );
+
+        closeModal("policyModal");
+
+        toast("Policy created.");
+
+        await loadPolicies();
+
+    } catch (error) {
+        toast(error.message);
+    }
+}
+
+function saveKey() {
+    const key =
+        $("apiKey")?.value.trim();
 
     if (!key) {
-        toast("Enter an API key.");
-        return;
+        return toast(
+            "Enter an API key."
+        );
     }
 
     state.apiKey = key;
@@ -644,72 +544,240 @@ async function saveKey() {
         key
     );
 
-    setText(
-        "keyStatus",
-        "Workspace credential loaded."
-    );
+    if ($("keyStatus")) {
+        $("keyStatus").textContent =
+            "Workspace credential loaded for this browser session.";
+    }
 
-    toast("Workspace connected.");
-
-    await refreshAll();
+    loadWorkspace();
 }
 
 function clearKey() {
     state.apiKey = "";
-    state.selected = null;
 
-    sessionStorage.removeItem("aai_api_key");
-
-    const input = $("apiKey");
-
-    if (input) {
-        input.value = "";
-    }
-
-    setText(
-        "keyStatus",
-        "No workspace credential loaded."
+    sessionStorage.removeItem(
+        "aai_api_key"
     );
 
-    showDisconnectedState();
+    if ($("apiKey")) {
+        $("apiKey").value = "";
+    }
 
-    toast("Workspace disconnected.");
+    if ($("keyStatus")) {
+        $("keyStatus").textContent =
+            "No workspace credential loaded.";
+    }
+
+    if ($("metricAssets")) {
+        $("metricAssets").textContent = "—";
+    }
+
+    if ($("metricState")) {
+        $("metricState").textContent = "—";
+    }
+
+    if ($("assetTable")) {
+        $("assetTable").innerHTML =
+            `<tr>
+                <td colspan="6" class="empty">
+                    No workspace loaded.
+                </td>
+            </tr>`;
+    }
+
+    toast(
+        "Workspace disconnected."
+    );
 }
 
-async function demoDecision(decision) {
-    if (!state.selected) {
-        toast("Select an asset first.");
-        return;
+async function bootstrap() {
+    const key =
+        $("bootstrapKey")?.value.trim();
+
+    const name =
+        $("orgName")?.value.trim();
+
+    if (!key || !name) {
+        return toast(
+            "Bootstrap credential and organization name are required."
+        );
     }
 
     try {
-        const result = await api(
-            "/v1/control/decisions",
+        const response = await fetch(
+            "/v1/control/organizations/bootstrap",
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json",
+                    "X-Bootstrap-Key": key
                 },
                 body: JSON.stringify({
-                    asset_id: state.selected,
-                    action: "execute",
-                    context: {
-                        ui_request: decision
-                    }
-                })
+                    name
+                }),
+                cache: "no-store"
             }
         );
 
-        setText(
-            "decisionOutput",
-            JSON.stringify(result, null, 2)
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail ||
+                "Bootstrap failed"
+            );
+        }
+
+        state.apiKey =
+            data.credential.api_key;
+
+        sessionStorage.setItem(
+            "aai_api_key",
+            state.apiKey
         );
+
+        if ($("apiKey")) {
+            $("apiKey").value =
+                state.apiKey;
+        }
+
+        if ($("keyStatus")) {
+            $("keyStatus").textContent =
+                "Organization provisioned and workspace connected.";
+        }
+
+        toast(
+            "Workspace provisioned."
+        );
+
+        await loadWorkspace();
+
     } catch (error) {
         toast(error.message);
     }
 }
 
-window.selectAsset = selectAsset;
-window.demoDecision = demoDecision;
+async function loadBilling() {
+    const message = $("billingMessage");
+
+    if (!state.apiKey) {
+        if (message) {
+            message.textContent =
+                "Connect a workspace to manage billing.";
+        }
+        return;
+    }
+
+    try {
+        const data = await api(
+            "/v1/billing/account"
+        );
+
+        if ($("billingPlan")) {
+            $("billingPlan").textContent =
+                data.plan.name;
+        }
+
+        if ($("billingStatus")) {
+            $("billingStatus").textContent =
+                data.account.status;
+        }
+
+        if ($("billingEvaluations")) {
+            $("billingEvaluations").textContent =
+                data.usage.evaluations +
+                (
+                    data.plan.max_evaluations_month === null
+                        ? ""
+                        : " / " +
+                          data.plan.max_evaluations_month
+                );
+        }
+
+        if ($("billingAssets")) {
+            $("billingAssets").textContent =
+                data.usage.assets_created +
+                (
+                    data.plan.max_assets === null
+                        ? ""
+                        : " / " +
+                          data.plan.max_assets
+                );
+        }
+
+        if (message) {
+            message.textContent =
+                "Billing account loaded.";
+        }
+
+    } catch (error) {
+        if (message) {
+            message.textContent =
+                error.message;
+        }
+    }
+}
+
+async function checkout() {
+    if (!state.apiKey) {
+        return toast(
+            "Connect a workspace first."
+        );
+    }
+
+    const email =
+        $("billingEmail")
+            ?.value.trim();
+
+    const plan =
+        $("billingPlanSelect")
+            ?.value;
+
+    if (!email) {
+        return toast(
+            "Billing email is required."
+        );
+    }
+
+    try {
+        const data = await api(
+            "/v1/billing/checkout",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    plan,
+                    email
+                })
+            }
+        );
+
+        if (data.url) {
+            window.location.href =
+                data.url;
+        } else {
+            toast(
+                "No checkout required for this plan."
+            );
+        }
+
+    } catch (error) {
+        toast(error.message);
+    }
+}
+
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.saveKey = saveKey;
+window.clearKey = clearKey;
+window.bootstrap = bootstrap;
+window.createAsset = createAsset;
+window.createPolicy = createPolicy;
+window.checkout = checkout;
 
 init();
