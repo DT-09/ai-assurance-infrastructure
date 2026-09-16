@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-assurance.dev/protocol/v1/schema.json",
+  "title": "AI Assurance Protocol v1",
+  "type": "object",
+  "required": [
+    "protocol",
+    "version",
+    "states",
+    "decisions"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "AI Assurance Protocol"
+    },
+    "version": {
+      "const": "1.0"
+    },
+    "states": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "ASSURED",
+          "DEGRADED",
+          "BLOCKED"
+        ]
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "ALLOW",
+          "REVIEW",
+          "DENY"
+        ]
+      }
+    }
+  }
+}

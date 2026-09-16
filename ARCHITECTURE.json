@@ -1,0 +1,18 @@
+{
+  "release": "5.0.0",
+  "name": "AI Assurance Infrastructure",
+  "architecture": [
+    "Persistent Assurance Core",
+    "Evidence Fabric",
+    "Dependency Graph",
+    "Continuous Trust State",
+    "Policy and Decision Control",
+    "Persistent Audit History",
+    "Trust Passport",
+    "AI Assurance Protocol v1",
+    "Python SDK",
+    "Control Plane UI"
+  ],
+  "design_goal": "Strategic vendor-neutral assurance infrastructure rather than a disposable qualification demo.",
+  "status": "engineering foundation"
+}

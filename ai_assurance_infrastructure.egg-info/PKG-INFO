@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: ai-assurance-infrastructure
+Version: 6.0.0
+Summary: Persistent vendor-neutral assurance infrastructure for AI systems.
+Requires-Python: >=3.11
+Requires-Dist: fastapi<1,>=0.115
+Requires-Dist: uvicorn[standard]<1,>=0.34
+Requires-Dist: pydantic<3,>=2.10
+Requires-Dist: httpx<1,>=0.28
+Requires-Dist: sqlalchemy<3,>=2.0
+Requires-Dist: psycopg[binary]<4,>=3.2
+Requires-Dist: PyJWT[crypto]<3,>=2.10
+Requires-Dist: opentelemetry-api<2,>=1.27
+Requires-Dist: opentelemetry-sdk<2,>=1.27
+Requires-Dist: prometheus-client<1,>=0.21
+Requires-Dist: boto3<2,>=1.35
+Provides-Extra: dev
+Requires-Dist: pytest<9,>=8.0; extra == "dev"

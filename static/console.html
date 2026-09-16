@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Assurance Infrastructure — Control Plane</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/console.css">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand"><span class="mark">A</span><div><b>AI Assurance</b><small>Infrastructure</small></div></div>
+  <nav>
+    <button class="active" data-view="overview">Overview</button>
+    <button data-view="assets">AI Assets</button>
+    <button data-view="graph">Dependency Graph</button>
+    <button data-view="evidence">Evidence</button>
+    <button data-view="assurance">Trust State</button>
+    <button data-view="policies">Policies</button>
+    <button data-view="protocol">Protocol</button>
+    <button data-view="access">Workspace</button>
+  </nav>
+  <div class="side-note">Vendor-neutral trust infrastructure<br><span>Control Plane v5.0</span></div>
+</aside>
+<main>
+<header><div id="crumb">Control Plane / Overview</div><div class="right"><span class="live"><i></i><span id="serviceStatus">Operational</span></span><span class="mono" id="version">v5.0.0</span></div></header>
+<section class="view active" id="view-overview">
+  <div class="hero"><div><label>AI ASSURANCE CONTROL PLANE</label><h1>Trust state for AI systems that keeps changing.</h1><p>Persistent identity, evidence, dependencies, policy and machine-verifiable assurance in one control plane.</p></div><div class="hero-orbit"><div class="orbit-core">TRUST<br>STATE</div><span>IDENTITY</span><span>EVIDENCE</span><span>GRAPH</span><span>POLICY</span></div></div>
+  <div class="metrics"><article><small>Registered assets</small><strong id="metricAssets">—</strong><em>Persistent AI identities</em></article><article><small>Current trust</small><strong id="metricState">—</strong><em>Latest computed state</em></article><article><small>Evidence</small><strong id="metricEvidence">—</strong><em>Recorded assurance signals</em></article><article><small>Protocol</small><strong>v1.0</strong><em>Machine-verifiable</em></article></div>
+  <div class="section-head"><h2>Assurance fabric</h2><span>Persistent lifecycle</span></div>
+  <div class="fabric"><div><b>01 Identity</b><span>Stable asset + version identity</span></div><div><b>02 Evidence</b><span>Provenance-backed observations</span></div><div><b>03 Graph</b><span>Models, tools, services and impact</span></div><div><b>04 Trust</b><span>Continuous state computation</span></div><div><b>05 Control</b><span>ALLOW / REVIEW / DENY</span></div></div>
+</section>
+
+<section class="view" id="view-assets"><div class="section-head"><h2>AI Asset Registry</h2><button class="primary" data-action="refresh">Refresh</button></div><div id="assetCards" class="cards"></div></section>
+<section class="view" id="view-graph"><div class="section-head"><h2>Dependency Graph</h2><span id="graphSummary">Loading…</span></div><div class="graphbox"><div id="graphNodes"></div></div></section>
+<section class="view" id="view-evidence"><div class="section-head"><h2>Evidence Fabric</h2><span>Provenance + audit</span></div><div class="table-wrap"><table><thead><tr><th>Evidence</th><th>Type</th><th>Result</th><th>Source</th><th>Provenance</th></tr></thead><tbody id="evidenceTable"><tr><td colspan="5" class="empty">Select an asset.</td></tr></tbody></table></div></section>
+<section class="view" id="view-assurance"><div class="section-head"><h2>Trust State</h2><span>Continuous assurance</span></div><div class="trust-panel"><div class="trust-ring" id="trustRing">—</div><div><h3 id="trustHeadline">No asset selected</h3><p id="trustReasons">Choose an asset from the registry to inspect its current assurance state.</p></div></div><div class="table-wrap"><table><thead><tr><th>Signal</th><th>State</th><th>Value</th></tr></thead><tbody id="trustTable"></tbody></table></div></section>
+<section class="view" id="view-policies"><div class="section-head"><h2>Policy & Decisions</h2><span>Deterministic enforcement</span></div><div class="decision-grid"><button onclick="demoDecision('ALLOW')">ALLOW</button><button onclick="demoDecision('REVIEW')">REVIEW</button><button onclick="demoDecision('DENY')">DENY</button></div><pre id="decisionOutput">{}</pre></section>
+<section class="view" id="view-protocol"><div class="section-head"><h2>AI Assurance Protocol</h2><span id="protocolVersion">v1.0</span></div><pre id="manifest">{}</pre></section>
+<section class="view" id="view-access"><div class="section-head"><h2>Workspace</h2><span>API authentication</span></div><div class="workspace"><input id="apiKey" type="password" placeholder="X-API-Key"><button class="primary" data-action="save-key">Connect</button><button data-action="clear-key">Clear</button></div><p id="keyStatus">No workspace credential loaded.</p></section>
+</main>
+<div id="toast"></div>
+<script src="/static/console.js"></script>
+</div>
+</body></html>
