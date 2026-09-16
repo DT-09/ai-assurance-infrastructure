@@ -73,7 +73,7 @@ class IdentityStore:
     def create_key(self, organization_id: str, name: str = "default") -> dict:
         self.ensure_identity(organization_id)
         key_id = "key_" + secrets.token_hex(16)
-        raw_key = "aap_" + secrets.token_urlsafe(32)
+        raw_key = "aai_" + secrets.token_urlsafe(32)
         salt = os.urandom(32)
         created_at = datetime.now(timezone.utc).isoformat()
         key_hash = self._hash(raw_key, salt)
