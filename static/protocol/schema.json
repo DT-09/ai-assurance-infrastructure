@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Assurance Protocol v1",
+  "type": "object",
+  "required": ["protocol", "version", "asset", "trust_state"],
+  "properties": {
+    "protocol": {"const": "AI Assurance Protocol"},
+    "version": {"type": "string"},
+    "asset": {"type": "object"},
+    "trust_state": {"enum": ["ASSURED", "DEGRADED", "BLOCKED", "UNKNOWN"]}
+  }
+}

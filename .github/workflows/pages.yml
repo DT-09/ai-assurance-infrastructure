@@ -1,0 +1,83 @@
+﻿name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build static site
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf _site
+          mkdir -p _site
+          cp -R static/. _site/
+
+          # GitHub Pages project-site paths.
+          find _site -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) \
+            -exec sed -i \
+              -e 's#href="/static/#href="./#g' \
+              -e 's#src="/static/#src="./#g' \
+              -e 's#href="/"#href="./index.html"#g' \
+              -e 's#href="/pricing"#href="./pricing.html"#g' \
+              -e 's#href="/console"#href="./console.html"#g' \
+              -e 's#href="/protocol"#href="./protocol.html"#g' \
+              -e 's#href="/protocol.json"#href="./protocol.json"#g' \
+              -e 's#href="/protocol/v1/schema.json"#href="./protocol/v1/schema.json"#g' \
+              {} +
+
+          # Keep machine-readable protocol assets available.
+          mkdir -p _site/protocol/v1
+          cp protocol/v1/schema.json _site/protocol/v1/schema.json
+
+          # Public protocol manifest.
+          cat > _site/protocol.json <<'JSON'
+          {
+            "protocol": "AI Assurance Protocol",
+            "version": "1.0.0",
+            "schema": "./protocol/v1/schema.json",
+            "description": "Vendor-neutral machine-verifiable assurance protocol for AI identity, evidence, trust state and enforcement."
+          }
+          JSON
+
+          # GitHub Pages needs this file for predictable static routing.
+          touch _site/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

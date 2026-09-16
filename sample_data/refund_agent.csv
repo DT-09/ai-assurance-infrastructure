@@ -1,0 +1,5 @@
+﻿case_id,expected_output,actual_output,success,latency_ms,tool_error,critical,human_review_required,estimated_cost_usd
+REF-001,Approve refund,Approve refund,true,1200,false,false,false,0.03
+REF-002,Reject refund,Reject refund,true,1400,false,false,false,0.03
+REF-003,Escalate,Escalate,true,1700,false,false,true,0.04
+REF-004,Reject refund,Approve refund,false,2100,false,true,false,0.03
