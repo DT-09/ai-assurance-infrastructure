@@ -1,6 +1,6 @@
 # AI Assurance Infrastructure — Final Software Release
 
-Release: 3.1.0
+Release: 5.0.0
 
 ## Release status
 
@@ -8,7 +8,7 @@ The repository is complete as a production-deployable software package. The fina
 
 ## Verification
 
-- 75 automated tests passed
+- 100 automated tests passed
 - 0 test warnings in the release gate
 - `python -m compileall app sdk gateway` passed
 - production configuration rejects production startup without PostgreSQL

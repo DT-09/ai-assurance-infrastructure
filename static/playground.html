@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Assurance Playground</title>
+<style>
+body{margin:0;background:#07101f;color:#edf4ff;font:15px system-ui,-apple-system,sans-serif}main{max-width:1050px;margin:0 auto;padding:48px 22px}h1{font-size:42px;margin:0 0 10px}p{color:#9eb0c9;line-height:1.6}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}.card{background:#0b1629;border:1px solid #203553;border-radius:16px;padding:20px}.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #182a44}.row:last-child{border:0}input{width:100%;box-sizing:border-box;background:#07101f;border:1px solid #29405f;color:#fff;border-radius:8px;padding:10px;margin-top:5px}label{display:block;color:#9eb0c9;font-size:12px;margin:12px 0}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{display:flex;gap:8px;align-items:center;color:#dbe7f7}.checks input{width:auto;margin:0}button{margin-top:15px;background:#5b8cff;color:white;border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer}pre{white-space:pre-wrap;background:#06101d;border:1px solid #1c304c;border-radius:10px;padding:15px;min-height:230px;overflow:auto}.state{font:800 22px monospace}@media(max-width:760px){.grid,.checks{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<div><small>AI ASSURANCE INFRASTRUCTURE · PUBLIC REFERENCE</small><h1>AI Assurance Playground</h1><p>Run the public reference benchmark against a declarative AI workflow posture. The result is deterministic and shows exactly which assurance controls pass or fail.</p></div>
+<div class="grid">
+<section class="card"><h2>Workflow posture</h2>
+<label>Observed reliability<input id="reliability" type="number" min="0" max="1" step="0.001" value="0.98"></label>
+<label>Target reliability<input id="target" type="number" min="0" max="1" step="0.001" value="0.95"></label>
+<label>Critical failures<input id="critical" type="number" min="0" step="1" value="0"></label>
+<label>Human review rate<input id="review" type="number" min="0" max="1" step="0.01" value="0.05"></label>
+<div class="checks">
+<label><input id="identity" type="checkbox" checked> Identity declared</label>
+<label><input id="authority" type="checkbox" checked> Authority explicit</label>
+<label><input id="provenance" type="checkbox" checked> Evidence provenance</label>
+<label><input id="policy" type="checkbox" checked> Deterministic policy</label>
+<label><input id="deps" type="checkbox" checked> Dependencies visible</label>
+<label><input id="runtime" type="checkbox" checked> Runtime control</label>
+<label><input id="degraded" type="checkbox" checked> Review escalation</label>
+</div><button onclick="run()">Run benchmark</button></section>
+<section class="card"><h2>Result</h2><div class="state" id="state">—</div><p id="summary">Run the reference benchmark to see the machine-readable result.</p><pre id="output">{}</pre></section>
+</div>
+<script>
+async function run(){const payload={reliability:+reliability.value,target_reliability:+target.value,critical_failures:+critical.value,human_review_rate:+review.value,identity:identity.checked,authority:authority.checked,provenance:provenance.checked,deterministic_policy:policy.checked,dependencies_visible:deps.checked,runtime_control:runtime.checked,degraded_review:degraded.checked};const r=await fetch('/public/benchmark/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();state.textContent=d.state;summary.textContent=`${d.passed}/${d.total} scenarios passed · ${d.percentage}% benchmark score`;output.textContent=JSON.stringify(d,null,2)}
+</script>
+</main></body></html>

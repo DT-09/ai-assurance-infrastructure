@@ -14,5 +14,5 @@
     "Control Plane UI"
   ],
   "design_goal": "Strategic vendor-neutral assurance infrastructure rather than a disposable qualification demo.",
-  "status": "engineering foundation"
+  "status": "verified engineering release"
 }

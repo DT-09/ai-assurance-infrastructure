@@ -1,57 +1,31 @@
-# AI Assurance Infrastructure — Production Foundation v6
+# AI Assurance Infrastructure
 
-This release turns the Assurance Core into a durable, tenant-scoped control-plane foundation.
+**Vendor-neutral assurance infrastructure for autonomous AI systems.**
 
-## Implemented
+This repository contains the persistent control-plane foundation, AI Assurance Protocol v1, and the public AI Assurance Benchmark v1.
 
-- Durable SQLAlchemy persistence with SQLite WAL locally and PostgreSQL for hosted deployments.
-- Organization/tenant isolation at the persistence and API layers.
-- Hashed, scoped API keys plus an environment master key for controlled bootstrap/local operation.
-- Idempotency keys for safe retry of write requests.
-- Hash-chained evidence provenance.
-- Hash-chained audit log with verification endpoint.
-- Durable outbox events for downstream event-bus integration.
-- Persistent trust epochs and trust-state hashes.
-- Dependency impact analysis.
-- Policy decisions: ALLOW / REVIEW / DENY.
-- Signed Trust Passport using HMAC-SHA256.
-- Versioned vendor-neutral protocol manifest and schema.
-- Python SDK covering the control-plane primitives.
-- FastAPI OpenAPI surface, readiness and request IDs.
-- Docker + PostgreSQL deployment foundation.
-- Automated core/API tests.
+## Public technical surface
 
-## Run locally
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -e ".[dev]"
-$env:AAI_API_KEY="aai_local_development_key"
-uvicorn app.main:app --reload
-```
-
-Open `http://127.0.0.1:8000/` for the control plane and `/docs` for the API contract.
-
-## Production configuration
-
-Set `AAI_ENVIRONMENT=production`, a PostgreSQL `AAI_DATABASE_URL`, a long random `AAI_API_KEY`, `AAI_BOOTSTRAP_KEY`, and `AAI_SIGNING_SECRET`. Never ship the development defaults.
+- `/public/playground` — interactive reference benchmark
+- `/public/protocol` — machine-readable protocol manifest
+- `/public/benchmark` — benchmark catalog
+- `/public/benchmark/run` — deterministic benchmark execution
+- `/v1/control/*` — authenticated control-plane API
 
 ## Architecture
 
-```text
-AI SYSTEM
-  -> IDENTITY / REGISTRY
-  -> VERSION STATE
-  -> DEPENDENCY GRAPH
-  -> EVIDENCE FABRIC
-  -> ASSURANCE ENGINE
-  -> TRUST STATE
-  -> POLICY ENGINE
-  -> CONTROL DECISION
-  -> AUDIT + OUTBOX
-  -> TRUST PASSPORT
-  -> ASSURANCE PROTOCOL
-```
+`Identity → Authority → Evidence → Policy → Trust → Runtime Control`
 
-The next enterprise-hardening layer should add external identity federation, managed secrets/KMS, a real event bus/worker fleet, distributed runtime enforcement, observability/SLOs, HA/DR, formal protocol governance, signed key rotation, and production integrations. Those are deliberately separate infrastructure concerns rather than fake implementations hidden behind the UI.
+The system maintains persistent AI asset identity, versions, dependencies, evidence with SHA-256 provenance, evaluations, policies, decisions, trust states, and audit events.
+
+## Protocol
+
+AI Assurance Protocol v1 defines a vendor-neutral vocabulary for exchanging machine-readable assurance state and control signals. See `protocol/v1/README.md` and `docs/PROTOCOL.md`.
+
+## Benchmark
+
+AI Assurance Benchmark v1 is an experimental, transparent reference suite covering identity, authority, evidence, policy, reliability, failure handling, review escalation, dependency visibility, provenance, and runtime control. See `docs/BENCHMARK.md`.
+
+## Important status
+
+The protocol and benchmark are **experimental**. They are intended for engineering interoperability and research, not as a safety, security, compliance, or production certification by themselves.

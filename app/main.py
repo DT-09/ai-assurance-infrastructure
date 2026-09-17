@@ -10,6 +10,7 @@ from .services.trust import TrustEngine
 from .services.policy import PolicyEngine
 from .services.graph import DependencyGraph
 from .services.evidence import EvidenceService
+from .services.benchmark import benchmark_catalog, run_benchmark
 from .protocol import manifest, signed_passport
 from .security.enterprise import Principal, issue_session, verify_oidc_jwt, verify_saml_response
 from .observability.metrics import router as metrics_router, count, observe_latency
@@ -134,6 +135,29 @@ def readiness():
     return {'status':'ready','environment':ENVIRONMENT,'database_backend':backend,'checks':{'database':{'status':'ok','backend':backend},'audit_chain':{'status':'ok','backend':backend},'outbox':{'status':'ok','backend':backend},'runtime_control':{'status':'ok','backend':backend}}}
 @app.get('/v1/control/protocol/manifest')
 def protocol_manifest():return manifest()
+
+# Public assurance reference surface. These endpoints are intentionally
+# unauthenticated: the protocol and benchmark are public interoperability
+# artifacts, while customer/control-plane data remains authenticated.
+@app.get('/public/protocol')
+def public_protocol():
+    payload = manifest()
+    payload['version'] = '1.0.0'
+    payload['public'] = True
+    payload['benchmark'] = {
+        'name': 'AI Assurance Benchmark',
+        'version': '1.0',
+        'endpoint': '/public/benchmark',
+    }
+    return payload
+
+@app.get('/public/benchmark')
+def public_benchmark():
+    return benchmark_catalog()
+
+@app.post('/public/benchmark/run')
+def public_benchmark_run(body: dict):
+    return run_benchmark(body)
 
 @app.post('/v1/control/organizations/bootstrap',status_code=201)
 def bootstrap(body:dict,x_bootstrap_key:str|None=Header(default=None)):
@@ -445,6 +469,14 @@ def console_page():
     if 'Assurance Control Plane' not in html:
         html += '<!-- Assurance Control Plane -->'
     return html
+
+@app.get('/public', response_class=HTMLResponse)
+def public_site():
+    return _html('public.html')
+
+@app.get('/public/playground', response_class=HTMLResponse)
+def public_playground():
+    return _html('playground.html')
 
 @app.get('/protocol',response_class=HTMLResponse)
 def protocol_page():

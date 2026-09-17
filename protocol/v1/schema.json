@@ -35,6 +35,40 @@
           "DENY"
         ]
       }
+    },
+    "asset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assurance_state": {
+      "enum": [
+        "ASSURED",
+        "DEGRADED",
+        "BLOCKED",
+        "UNKNOWN",
+        "EVALUATING",
+        "STALE"
+      ]
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "dependencies": {
+      "type": "array"
+    },
+    "policies": {
+      "type": "array"
+    },
+    "provenance": {
+      "type": "string"
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 }

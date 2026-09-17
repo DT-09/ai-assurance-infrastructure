@@ -1,0 +1,13 @@
+{
+  "name": "AI Assurance Benchmark",
+  "version": "1.0",
+  "status": "experimental",
+  "purpose": "A transparent reference suite for continuous assurance controls in AI workflows.",
+  "principles": [
+    "Deterministic evaluation",
+    "Machine-readable results",
+    "Evidence and provenance first",
+    "Vendor neutrality",
+    "Continuous state rather than one-time certification"
+  ]
+}

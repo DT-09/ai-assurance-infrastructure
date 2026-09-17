@@ -4,21 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-assurance-infrastructure"
-version = "6.0.0"
+version = "5.0.0"
 description = "Persistent vendor-neutral assurance infrastructure for AI systems."
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi[standard]>=0.115,<1",
+  "fastapi>=0.115,<1",
   "uvicorn[standard]>=0.34,<1",
   "pydantic>=2.10,<3",
-  "httpx>=0.28,<1",
-  "sqlalchemy>=2.0,<3",
-  "psycopg[binary]>=3.2,<4",
-  "PyJWT[crypto]>=2.10,<3",
-  "opentelemetry-api>=1.27,<2",
-  "opentelemetry-sdk>=1.27,<2",
-  "prometheus-client>=0.21,<1",
-  "boto3>=1.35,<2"
+  "httpx>=0.28,<1"
 ]
 
 [project.optional-dependencies]
@@ -27,7 +20,6 @@ dev = ["pytest>=8.0,<9"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
-pythonpath = ["."]
 
 [tool.setuptools.packages.find]
 include = ["app*", "sdk*"]
