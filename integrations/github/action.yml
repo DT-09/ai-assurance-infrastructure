@@ -1,0 +1,21 @@
+name: AI Assurance Verification
+description: Verify an AI Assurance Trust Passport or Protocol document before merge or deployment.
+inputs:
+  document:
+    description: Path to a Trust Passport or Protocol v1 JSON document.
+    required: true
+  mode:
+    description: Verification mode.
+    required: false
+    default: passport
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        python -m pip install -r requirements.txt
+        if [ "${{ inputs.mode }}" = "conformance" ]; then
+          python -m cli.aai conformance "${{ inputs.document }}"
+        else
+          python -m cli.aai verify "${{ inputs.document }}"
+        fi

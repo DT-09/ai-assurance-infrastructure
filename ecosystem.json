@@ -1,0 +1,26 @@
+{
+  "name": "AI Assurance Infrastructure Ecosystem",
+  "version": "1.0.0",
+  "protocol": "AI Assurance Protocol",
+  "protocol_version": "1.0.0",
+  "layers": [
+    "participant_registry",
+    "assurance_exchange",
+    "integration_registry",
+    "protocol_conformance",
+    "ecosystem_graph",
+    "assurance_signals",
+    "trust_passport_interoperability"
+  ],
+  "artifact_kinds": [
+    "adapter",
+    "policy",
+    "evaluator",
+    "benchmark",
+    "schema",
+    "attestation_verifier",
+    "integration_kit",
+    "dataset",
+    "control_pack"
+  ]
+}

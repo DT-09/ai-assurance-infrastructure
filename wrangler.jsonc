@@ -1,0 +1,9 @@
+{
+  "name": "ai-assurance-infrastructure",
+  "main": "./worker.js",
+  "compatibility_date": "2026-09-17",
+  "assets": {
+    "directory": "./static",
+    "binding": "ASSETS"
+  }
+}

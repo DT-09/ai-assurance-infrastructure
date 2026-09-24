@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "ai-agent-gateway-sdk"
+version = "0.1.0"
+description = "Python SDK for the AI Agent Trust & Control Plane"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27,<1",
+]
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gateway_sdk*", "assurance_sdk*"]
+
+
+[project.urls]
+Repository = "https://github.com/DT-09/ai-workflow-qualification"

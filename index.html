@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="AI Assurance Infrastructure — vendor-neutral infrastructure for continuous assurance of autonomous AI.">
+<title>AI Assurance Infrastructure</title>
+<link rel="stylesheet" href="./site.css">
+</head>
+<body>
+<header class="top"><div class="shell nav">
+  <a class="brand" href="./"><span class="logo">AAI</span><span>AI Assurance<small>Infrastructure</small></span></a>
+  <nav class="links"><a href="#system">System</a><a href="./protocol.html">Protocol</a><a href="./ecosystem.html">Ecosystem</a><a href="./playground.html">Benchmark</a></nav>
+  <a class="nav-cta" href="./ecosystem.html">Open infrastructure</a>
+</div></header>
+<main>
+<div class="shell hero">
+  <div>
+    <div class="eyebrow">Vendor-neutral AI assurance</div>
+    <h1>Trust infrastructure for autonomous AI.</h1>
+    <p>Continuously establish what an AI system is, what it can do, what evidence supports it, and whether production execution should proceed.</p>
+    <div class="actions"><a class="btn primary" href="./playground.html">Run assurance benchmark</a><a class="btn" href="./ecosystem.html">Explore ecosystem</a></div>
+  </div>
+  <aside class="hero-aside">
+    <div id="network-status" class="state"><span class="dot"></span> Public surface ready</div>
+    <h3>Identity → Evidence → Trust → Control</h3>
+    <p id="version">Protocol 1.0</p>
+    <p>Persistent, machine-verifiable assurance that follows an AI asset across versions, dependencies and runtime decisions.</p>
+  </aside>
+</div>
+
+<section id="system"><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">The system</div><h2>One control layer across the AI lifecycle.</h2></div><p>AAI sits above models, tools, agents and infrastructure. It turns assurance evidence into durable identity, trust state and enforceable decisions.</p></div>
+  <div class="architecture">
+    <div class="arch"><strong>01 · Identity</strong><span>Register AI assets, versions, owners, environments and capabilities.</span></div>
+    <div class="arch"><strong>02 · Dependencies</strong><span>Map models, tools, services, credentials and external dependencies.</span></div>
+    <div class="arch"><strong>03 · Evidence</strong><span>Bind evaluations and provenance to exact asset versions.</span></div>
+    <div class="arch"><strong>04 · Trust</strong><span>Compute explainable, persistent assurance state and transitions.</span></div>
+    <div class="arch"><strong>05 · Control</strong><span>Authorize deployment and runtime execution using policy.</span></div>
+  </div>
+</div></section>
+
+<section><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">Infrastructure primitive</div><h2>Not a single pass/fail test.</h2></div><p>Assurance is a continuous control loop. A dependency or capability change can invalidate evidence, trigger impact analysis and change runtime authority.</p></div>
+  <div class="card">
+    <div class="flow"><span class="node">AI identity</span><span class="arrow">→</span><span class="node">Capabilities</span><span class="arrow">→</span><span class="node">Dependencies</span><span class="arrow">→</span><span class="node">Evidence</span><span class="arrow">→</span><span class="node">Trust state</span><span class="arrow">→</span><span class="node">Runtime decision</span></div>
+    <pre class="code">change detected
+    ↓
+impact analysis
+    ↓
+affected evidence identified
+    ↓
+trust state recalculated
+    ↓
+ALLOW / REVIEW / DENY
+    ↓
+signed assurance record</pre>
+  </div>
+</div></section>
+
+<section><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">Network</div><h2>An open ecosystem around the protocol.</h2></div><p>Platforms, AI labs, enterprises, developers, integrators and assurance providers can publish interoperable artifacts and conformance results.</p></div>
+  <div id="metrics" class="grid five"></div>
+</div></section>
+
+<section><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">Assurance exchange</div><h2>Reusable infrastructure.</h2></div><p>Adapters, evaluators, policies, benchmarks, schemas and attestation verifiers are content-addressable and machine-readable.</p></div>
+  <div class="exchange">
+    <div class="card exchange-card"><h3>Protocol</h3><p>Open schemas for identity, evidence, provenance, trust state and attestations.</p><ul><li>Machine-readable</li><li>Canonical integrity</li><li>Cross-provider interoperability</li></ul></div>
+    <div class="card exchange-card"><h3>Trust Passport</h3><p>A portable machine-verifiable history of an AI asset's identity, evidence and trust state.</p><ul><li>Version-aware</li><li>Dependency-aware</li><li>Verification-ready</li></ul></div>
+  </div>
+</div></section>
+
+<section><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">Developer entry point</div><h2>Integrate once. Carry assurance everywhere.</h2></div><p>The reference implementation exposes APIs and SDK boundaries so external runtimes can register, evaluate, verify and enforce assurance state.</p></div>
+  <pre class="code">POST /v1/ecosystem/participants
+POST /v1/ecosystem/artifacts
+POST /v1/ecosystem/integrations
+POST /v1/ecosystem/conformance
+
+GET  /public/ecosystem/manifest
+GET  /public/ecosystem/graph
+GET  /public/ecosystem/stats</pre>
+  <div class="actions"><a class="btn primary" href="./protocol.html">Read protocol</a><a class="btn" href="./ecosystem.html">Join the ecosystem</a></div>
+</div></section>
+</main>
+<footer class="shell footer"><span>AI Assurance Infrastructure · Protocol v1</span><span>Trust and control for autonomous AI.</span></footer>
+<script src="./site.js" defer></script>
+<!-- compatibility routes: /console /protocol -->
+</body></html>

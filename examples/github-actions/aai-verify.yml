@@ -1,0 +1,17 @@
+name: AAI Assurance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify AI Assurance passport
+        uses: DT-09/aai-assurance/integrations/github@main
+        with:
+          document: assurance/passport.json
+          mode: passport

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: aai-api}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: aai-api}}
+  strategy: {type: RollingUpdate, rollingUpdate: {maxUnavailable: 0, maxSurge: 1}}
+  template:
+    metadata: {labels: {app: aai-api}}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: api
+        image: ghcr.io/dt-09/ai-assurance-infrastructure:latest
+        ports: [{containerPort: 8000}]
+        envFrom: [{secretRef: {name: aai-secrets}}]
+        readinessProbe: {httpGet: {path: /api/readiness, port: 8000}, initialDelaySeconds: 5, periodSeconds: 10}
+        livenessProbe: {httpGet: {path: /api/health, port: 8000}, initialDelaySeconds: 10, periodSeconds: 20}
+        resources: {requests: {cpu: 100m, memory: 256Mi}, limits: {cpu: 1, memory: 1Gi}}
+        securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: false, runAsNonRoot: true}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: aai-api}
+spec:
+  selector: {app: aai-api}
+  ports: [{port: 80, targetPort: 8000}]
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: aai-api-pdb}
+spec:
+  minAvailable: 2
+  selector: {matchLabels: {app: aai-api}}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: aai-api}
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: aai-api}
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource: {name: cpu, target: {type: Utilization, averageUtilization: 65}}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: aai-postgres-backup}
+spec:
+  schedule: "17 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: postgres:17-alpine
+            envFrom: [{secretRef: {name: aai-backup-secrets}}]
+            command: ["/bin/sh","-c"]
+            args: ["pg_dump --format=custom --file=/backup/aai-$(date +%Y%m%d%H%M%S).dump \"$AAI_DATABASE_URL\" && find /backup -type f -mtime +7 -delete"]
+            volumeMounts: [{name: backup, mountPath: /backup}]
+          volumes: [{name: backup, persistentVolumeClaim: {claimName: aai-backups}}]

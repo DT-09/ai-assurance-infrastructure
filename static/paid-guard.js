@@ -1,0 +1,1 @@
+(async()=>{const token=localStorage.getItem('aai_access_token');if(!token){location.replace('./app.html');return;}try{const r=await fetch('/api/access/check',{headers:{authorization:`Bearer ${token}`}});if(!r.ok){localStorage.removeItem('aai_access_token');location.replace('./app.html');}}catch(_){location.replace('./app.html');}})();

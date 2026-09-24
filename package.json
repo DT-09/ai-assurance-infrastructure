@@ -1,0 +1,8 @@
+{
+  "name": "ai-assurance-infrastructure",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "wrangler": "^4.135.0"
+  }
+}
