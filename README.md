@@ -4,6 +4,15 @@
 
 This repository contains the persistent control-plane foundation, AI Assurance Protocol v1, and the public AI Assurance Benchmark v1.
 
+## Partner evaluation package
+
+The runtime-control engine includes a bounded, deterministic partner evaluation kit:
+- [Partner pilot offer](PARTNER_PILOT_OFFER.md) — scope, proposed fee, deliverables, and acceptance criteria
+- [Partner pilot runbook](PARTNER_PILOT_RUNBOOK.md) — safe execution and commercial decision gates
+- [Synthetic authority evaluation harness](examples/partner_authority_eval.py) — expected-versus-observed policy decisions with evidence hashes
+
+The harness uses the in-memory policy gateway and synthetic scenarios only. It does not call an LLM, connect to customer systems, or execute real-world side effects. It is an evaluation fixture, not a customer assessment or security certification. The proposed US$250 pilot price is unvalidated and should be used only as a commercial test after the buyer agrees to scope.
+
 ## Inbound developer surface
 
 AAI is designed to be discovered through useful infrastructure rather than cold sales alone. The public surface includes a free assurance scan, benchmark, protocol, failure observatory and GitHub verification action.
