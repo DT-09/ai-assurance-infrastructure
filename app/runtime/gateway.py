@@ -193,7 +193,10 @@ class RuntimeGateway:
                 if valid and self._consume_approval(str(approval_id)):
                     decision = RuntimeDecision.ALLOW
                     approval_used = grant
-                    reasons.append(f"Approved for this exact action by {grant.get('approver', 'an authorised reviewer')}.")
+                    reasons.append(
+                        f"Approval grant {grant.get('decision_id')} by {grant.get('approver')} "
+                        f"accepted for this exact action; expires {grant.get('expires_at')}."
+                    )
                 else:
                     decision = RuntimeDecision.REQUIRE_APPROVAL
                     reasons.append("A valid, unexpired approval bound to this exact action is required.")
@@ -206,15 +209,6 @@ class RuntimeGateway:
             "reasons": reasons,
             "contract_hash": contract_hash,
             "policy_version": policy_version,
-            "approval": (
-                {
-                    "decision_id": approval_used.get("decision_id"),
-                    "approver": approval_used.get("approver"),
-                    "action_hash": approval_used.get("action_hash"),
-                    "expires_at": approval_used.get("expires_at"),
-                }
-                if approval_used else None
-            ),
         }
         record = RuntimeDecisionRecord(
             decision_id="dec_" + uuid.uuid4().hex,
