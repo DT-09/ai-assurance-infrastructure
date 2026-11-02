@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
 from .models import ActionRequest, AuthorityContract, RuntimeDecision, RuntimeDecisionRecord
@@ -16,15 +17,35 @@ def digest(value: Any) -> str:
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
+def action_binding(request: ActionRequest) -> str:
+    """Hash only action-relevant fields; timestamps and trace IDs do not change authority."""
+    return digest({
+        "agent_id": request.agent_id,
+        "agent_version": request.agent_version,
+        "action": request.action.lower(),
+        "tool": request.tool.lower(),
+        "target": request.target,
+        "data_classes": sorted(request.data_classes),
+        "amount_usd": request.amount_usd,
+        "destination": request.destination.lower(),
+        "intent": request.intent,
+        "context": request.context,
+    })
+
+
 class RuntimeGateway:
     """Deterministic policy boundary for consequential AI actions."""
 
-    VERSION = "runtime-gateway-2.0.0"
+    VERSION = "runtime-gateway-2.1.0"
 
-    def __init__(self, store=None):
+    def __init__(self, store=None, approval_ttl_seconds: int = 300):
+        if approval_ttl_seconds <= 0:
+            raise ValueError("approval_ttl_seconds must be positive")
         self.store = store
+        self.approval_ttl_seconds = approval_ttl_seconds
         self._contracts: dict[tuple[str, str], AuthorityContract] = {}
-        self._approvals: set[str] = set()
+        self._approvals: dict[str, dict[str, Any]] = {}
+        self._decisions: dict[str, dict[str, Any]] = {}
 
     def register_contract(self, contract: AuthorityContract) -> dict[str, Any]:
         if not contract.agent_id or not contract.version:
@@ -45,9 +66,91 @@ class RuntimeGateway:
                 self._contracts[(agent_id, version)] = value
         return value
 
+    def _get_decision(self, decision_id: str) -> dict[str, Any] | None:
+        value = self._decisions.get(decision_id)
+        if value is not None:
+            return value
+        if self.store:
+            return self.store.get_decision(decision_id)
+        return None
+
+    def _get_approval(self, decision_id: str | None) -> dict[str, Any] | None:
+        if not decision_id:
+            return None
+        value = self._approvals.get(decision_id)
+        if value is not None:
+            return value
+        if self.store:
+            value = self.store.get_approval_grant(decision_id)
+            if value is not None:
+                self._approvals[decision_id] = value
+            return value
+        return None
+
+    def _consume_approval(self, decision_id: str) -> bool:
+        if self.store:
+            consumed = self.store.consume_approval_grant(decision_id)
+            if consumed:
+                grant = self._get_approval(decision_id)
+                if grant is not None:
+                    grant["consumed_at"] = datetime.now(timezone.utc).isoformat()
+                return True
+            return False
+        grant = self._approvals.get(decision_id)
+        if not grant or grant.get("consumed_at"):
+            return False
+        grant["consumed_at"] = datetime.now(timezone.utc).isoformat()
+        return True
+
+    def approve(self, decision_id: str, approver: str) -> dict[str, Any]:
+        approver = approver.strip()
+        if not approver:
+            raise ValueError("approver is required")
+
+        pending = self._get_decision(decision_id)
+        if not pending:
+            raise ValueError("approval decision does not exist")
+        if pending.get("decision") != RuntimeDecision.REQUIRE_APPROVAL.value:
+            raise ValueError("only a pending approval-required decision can be approved")
+
+        action = ActionRequest.from_dict(pending["action"])
+        contract = self.get_contract(action.agent_id, action.agent_version)
+        if not contract:
+            raise ValueError("authority contract no longer exists")
+        current_contract_hash = digest(contract.to_dict())
+        if current_contract_hash != pending.get("contract_hash"):
+            raise ValueError("authority contract changed; create a new decision before approval")
+
+        if self._get_approval(decision_id):
+            raise ValueError("this decision already has an approval grant")
+
+        now = datetime.now(timezone.utc)
+        grant = {
+            "decision_id": decision_id,
+            "approver": approver,
+            "action_hash": action_binding(action),
+            "contract_hash": current_contract_hash,
+            "policy_version": contract.contract_version,
+            "created_at": now.isoformat(),
+            "expires_at": (now + timedelta(seconds=self.approval_ttl_seconds)).isoformat(),
+            "consumed_at": None,
+        }
+        self._approvals[decision_id] = grant
+        if self.store:
+            self.store.save_approval_grant(grant)
+        return {
+            "approved": True,
+            "decision_id": decision_id,
+            "approver": approver,
+            "expires_at": grant["expires_at"],
+            "action_hash": grant["action_hash"],
+        }
+
     def authorize(self, request: ActionRequest, *, approval_id: str | None = None) -> RuntimeDecisionRecord:
         contract = self.get_contract(request.agent_id, request.agent_version)
         reasons: list[str] = []
+        approval_used: dict[str, Any] | None = None
+
         if not contract:
             decision = RuntimeDecision.BLOCK
             reasons.append("No registered authority contract exists for this agent version.")
@@ -58,6 +161,7 @@ class RuntimeGateway:
             policy_version = contract.contract_version
             action = request.action.lower()
             tool = request.tool.lower()
+
             if action in contract.denied_actions:
                 reasons.append(f"Action '{request.action}' is explicitly denied.")
             if contract.allowed_actions and action not in contract.allowed_actions:
@@ -69,16 +173,43 @@ class RuntimeGateway:
             if request.destination and contract.allowed_destinations and request.destination.lower() not in contract.allowed_destinations:
                 reasons.append(f"Destination '{request.destination}' is outside the declared egress boundary.")
             if contract.max_transaction_usd is not None and request.amount_usd is not None and request.amount_usd > contract.max_transaction_usd:
-                reasons.append(f"Transaction amount ${request.amount_usd:,.2f} exceeds autonomous limit ${contract.max_transaction_usd:,.2f}.")
-            approval_needed = action in contract.approval_required_for or (contract.max_transaction_usd is not None and request.amount_usd is not None and request.amount_usd > contract.max_transaction_usd)
+                reasons.append(f"Transaction amount \${request.amount_usd:,.2f} exceeds autonomous limit \${contract.max_transaction_usd:,.2f}.")
+
+            approval_needed = action in contract.approval_required_for
             if reasons:
                 decision = RuntimeDecision.BLOCK
-            elif approval_needed and approval_id not in self._approvals:
-                decision = RuntimeDecision.REQUIRE_APPROVAL
-                reasons.append("A named human approval is required before execution.")
+            elif approval_needed:
+                grant = self._get_approval(approval_id)
+                now = datetime.now(timezone.utc)
+                valid = bool(
+                    grant
+                    and grant.get("decision_id") == approval_id
+                    and grant.get("action_hash") == action_binding(request)
+                    and grant.get("contract_hash") == contract_hash
+                    and grant.get("policy_version") == policy_version
+                    and not grant.get("consumed_at")
+                    and datetime.fromisoformat(grant["expires_at"]) > now
+                )
+                if valid and self._consume_approval(str(approval_id)):
+                    decision = RuntimeDecision.ALLOW
+                    approval_used = grant
+                    reasons.append(
+                        f"Approval grant {grant.get('decision_id')} by {grant.get('approver')} "
+                        f"accepted for this exact action; expires {grant.get('expires_at')}."
+                    )
+                else:
+                    decision = RuntimeDecision.REQUIRE_APPROVAL
+                    reasons.append("A valid, unexpired approval bound to this exact action is required.")
             else:
                 decision = RuntimeDecision.ALLOW
-        evidence_payload = {"request": request.to_dict(), "decision": decision.value, "reasons": reasons, "contract_hash": contract_hash, "policy_version": policy_version}
+
+        evidence_payload = {
+            "request": request.to_dict(),
+            "decision": decision.value,
+            "reasons": reasons,
+            "contract_hash": contract_hash,
+            "policy_version": policy_version,
+        }
         record = RuntimeDecisionRecord(
             decision_id="dec_" + uuid.uuid4().hex,
             decision=decision,
@@ -88,17 +219,10 @@ class RuntimeGateway:
             contract_hash=contract_hash,
             evidence_hash=digest(evidence_payload),
         )
+        self._decisions[record.decision_id] = record.to_dict()
         if self.store:
             self.store.save_decision(record)
         return record
-
-    def approve(self, decision_id: str, approver: str) -> dict[str, Any]:
-        if not approver.strip():
-            raise ValueError("approver is required")
-        self._approvals.add(decision_id)
-        if self.store:
-            self.store.save_approval(decision_id, approver)
-        return {"approved": True, "decision_id": decision_id, "approver": approver}
 
     def execute(self, request: ActionRequest, executor: Callable[[ActionRequest], Any], *, approval_id: str | None = None) -> dict[str, Any]:
         first = self.authorize(request, approval_id=approval_id)
