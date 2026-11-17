@@ -64,7 +64,7 @@ class AuthorityContract:
             "allowed_data_classes": sorted(self.allowed_data_classes),
             "denied_actions": sorted(self.denied_actions),
             "approval_required_for": sorted(self.approval_required_for),
-            "max_transaction_usd": self.max_transaction_usd,
+            "max_transaction_usd": (float(self.max_transaction_usd) if self.max_transaction_usd is not None else None),
             "allowed_destinations": sorted(self.allowed_destinations),
             "purpose": self.purpose,
             "contract_version": self.contract_version,
