@@ -26,7 +26,7 @@ def action_binding(request: ActionRequest) -> str:
         "tool": request.tool.lower(),
         "target": request.target,
         "data_classes": sorted(request.data_classes),
-        "amount_usd": request.amount_usd,
+        "amount_usd": (float(request.amount_usd) if request.amount_usd is not None else None),
         "destination": request.destination.lower(),
         "intent": request.intent,
         "context": request.context,
