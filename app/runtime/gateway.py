@@ -77,15 +77,16 @@ class RuntimeGateway:
     def _get_approval(self, decision_id: str | None) -> dict[str, Any] | None:
         if not decision_id:
             return None
-        value = self._approvals.get(decision_id)
-        if value is not None:
-            return value
         if self.store:
+            # The durable store is authoritative: do not trust a stale in-memory
+            # grant after expiry, revocation, consumption, or a concurrent update.
             value = self.store.get_approval_grant(decision_id)
             if value is not None:
                 self._approvals[decision_id] = value
+            else:
+                self._approvals.pop(decision_id, None)
             return value
-        return None
+        return self._approvals.get(decision_id)
 
     def _consume_approval(self, decision_id: str) -> bool:
         if self.store:
