@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A focused AI agent authority review. Compare declared tools, actions, data boundaries and approval rules with observed execution traces.">
+  <title>AI Agent Authority Review — AAI</title>
+  <link rel="stylesheet" href="./site.css">
+  <style>
+    .offer-hero{max-width:900px;padding-top:72px;padding-bottom:56px}
+    .offer-hero h1{font-size:clamp(42px,6vw,72px);line-height:1.02;letter-spacing:-.055em;max-width:880px;margin:14px 0 20px}
+    .offer-hero p{max-width:760px;color:var(--muted);font-size:18px;line-height:1.65}
+    .offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .offer-card{padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+    .offer-card h3{margin:8px 0}
+    .offer-card p,.offer-card li{color:var(--muted);font-size:14px;line-height:1.6}
+    .price{font-size:48px;font-weight:800;letter-spacing:-.05em}
+    .price-note{font-size:12px;color:var(--muted)}
+    .offer-list{padding-left:18px}
+    .offer-steps{counter-reset:step;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .offer-step{border-top:1px solid var(--line);padding:18px 8px 0}
+    .offer-step:before{counter-increment:step;content:"0" counter(step);font:700 12px ui-monospace;color:var(--accent)}
+    .offer-step h3{font-size:16px;margin:10px 0 5px}
+    .offer-step p{font-size:13px;color:var(--muted);line-height:1.55}
+    .scope-note{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:13px;line-height:1.6}
+    @media(max-width:800px){.offer-grid{grid-template-columns:1fr}.offer-steps{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.offer-steps{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header class="site-nav"><div class="shell nav-inner">
+  <a class="brand" href="./"><span class="logo">AAI</span><span>AI Assurance<small>Infrastructure</small></span></a>
+  <nav class="nav-links"><a href="./authority-review.html">Authority Review</a><a href="./playground.html">Benchmark</a><a href="./protocol.html">Protocol</a><a href="./developers.html">Developers</a></nav>
+  <a class="nav-cta" href="./contact.html?request=authority-review">Request review</a>
+</div></header>
+<main>
+<section class="section"><div class="shell offer-hero">
+  <div class="eyebrow">For teams deploying tool-using AI agents</div>
+  <h1>Did your AI agent stay inside its authority?</h1>
+  <p>Compare what an agent was allowed to do with what its execution traces show it actually did. Find unauthorized actions, tool drift, missing approval evidence, data-boundary violations and transaction-limit breaches.</p>
+  <div class="actions"><a class="btn primary" href="./contact.html?request=authority-review">Request a 60-minute review</a><a class="btn" href="./examples/authority_review_input.json">Inspect synthetic input</a></div>
+</div></section>
+<section class="section alt"><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">The paid review</div><h2>One agent. One version. Evidence, not assurances.</h2></div><p>Designed for AI automation agencies and B2B software teams preparing a customer-support, CRM or order-management agent for release.</p></div>
+  <div class="offer-grid">
+    <article class="offer-card"><div class="eyebrow">Fixed-scope session</div><div class="price">$179</div><div class="price-note">Proposed price · 60-minute review</div><p>One agent, one version, one authority contract and up to 500 sanitized traces.</p><ul class="offer-list"><li>Machine-readable findings report</li><li>Evidence root and trace references</li><li>Authority graph</li><li>Prioritized remediation walkthrough</li></ul><a class="btn primary" href="./contact.html?request=authority-review">Request this review</a></article>
+    <article class="offer-card"><div class="eyebrow">What we inspect</div><h3>Authority against execution</h3><ul class="offer-list"><li>Allowed and denied actions</li><li>Tool and API allow-lists</li><li>Data classes and destinations</li><li>Approval-required actions</li><li>Transaction limits</li><li>Material version and dependency changes</li></ul></article>
+    <article class="offer-card"><div class="eyebrow">What you receive</div><h3>A decision-ready evidence pack</h3><ul class="offer-list"><li>Findings with severity and source evidence</li><li>ALLOW, REVIEW or DENY assessment state</li><li>Unresolved evidence gaps</li><li>Specific remediation actions</li><li>Clear limits on what the review did not test</li></ul></article>
+  </div>
+</div></section>
+<section class="section"><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">Delivery</div><h2>From traces to a release decision.</h2></div></div>
+  <div class="offer-steps">
+    <div class="offer-step"><h3>Define authority</h3><p>Supply the agent's allowed tools, actions, data classes, destinations and approval rules.</p></div>
+    <div class="offer-step"><h3>Provide evidence</h3><p>Share only sanitized, authorized execution traces and version context.</p></div>
+    <div class="offer-step"><h3>Run assessment</h3><p>AAI compares observed events against the declared authority contract.</p></div>
+    <div class="offer-step"><h3>Review findings</h3><p>Walk through evidence, limitations and prioritized remediation in the session.</p></div>
+  </div>
+</div></section>
+<section class="section alt"><div class="shell">
+  <div class="section-head"><div><div class="eyebrow">Repeat engagement</div><h2>Re-review when the system changes.</h2></div><p>A repeat review makes sense after a model, prompt, tool, identity, permission or policy change—or when new execution evidence raises a question.</p></div>
+  <div class="scope-note">The CLI compares supplied traces with declared controls. It does not execute adversarial tests, access production systems, change live permissions or certify an agent as safe. The initial offer excludes regulated and high-impact workflows. Never send credentials, secrets or personal data.</div>
+  <div class="actions"><a class="btn primary" href="./contact.html?request=authority-review">Discuss a review</a><a class="btn" href="./docs/COMMERCIAL_OFFER_AGENT_AUTHORITY_REVIEW.md">Read the offer scope</a></div>
+</div></section>
+</main>
+<footer class="footer"><div class="shell footer-bottom"><span>© <span data-year></span> AI Assurance Infrastructure</span><span class="footer-legal"><a href="./privacy.html">Privacy</a><a href="./terms.html">Terms</a><a href="./security.html">Security</a></span></div></footer>
+<script src="./site.js"></script>
+</body></html>
