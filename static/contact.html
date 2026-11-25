@@ -107,10 +107,10 @@
   <section class="section">
     <div class="shell assurance-intro">
 
-      <div class="eyebrow">Enterprise assurance</div>
+      <div class="eyebrow">AI Agent Authority Review</div>
 
       <h1 style="font-size:64px;line-height:1.02;letter-spacing:-.055em;max-width:850px;margin:12px 0 20px">
-        Bring us one consequential AI workflow.
+        Bring us one tool-using AI agent.
       </h1>
 
       <p style="color:var(--muted);font-size:18px;max-width:760px">
@@ -119,9 +119,9 @@
       </p>
 
       <div class="engagement-banner">
-        <div class="micro">Initial assurance engagement</div>
+        <div class="micro">Fixed-scope initial review</div>
         <h3 style="margin:7px 0 6px">
-          One production AI workflow · <strong>$10,000</strong>
+          One agent · one version · <strong>$179</strong>
         </h3>
         <p style="margin:0;color:var(--muted);font-size:14px">
           Fixed-scope assessment covering reliability, failure modes, tool and action behavior,
@@ -301,7 +301,7 @@
 
           <div class="actions" style="margin-top:18px">
             <button class="btn primary" id="contact-submit" type="submit">
-              Request assurance engagement
+              Request authority review
             </button>
           </div>
 
@@ -409,7 +409,7 @@
 
   const params = new URLSearchParams(location.search);
 
-  if (params.get("request") === "enterprise") {
+  if (params.get("request") === "authority-review") {\n    document.getElementById("c-use").value = "Review one tool-using AI agent against its declared authority contract and sanitized execution traces.";\n    document.getElementById("c-problem").value = "We need to verify whether observed agent actions, tools, data access and approvals stayed within the declared authority boundary.";\n    document.getElementById("c-timeline").value = "Within 30 days";\n  } else if (params.get("request") === "enterprise") {
     document.getElementById("c-use").value =
       "Enterprise production AI assurance assessment for one consequential AI workflow.";
 
