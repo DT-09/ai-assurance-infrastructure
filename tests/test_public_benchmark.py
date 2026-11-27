@@ -61,6 +61,7 @@ def test_public_site_and_playground_are_reachable():
     site = request("GET", "/public")
     playground = request("GET", "/public/playground")
     assert site.status_code == 200
-    assert "vendor-neutral assurance layer" in site.text
+    assert "Vendor-neutral AI assurance" in site.text
+    assert "Make production AI accountable by infrastructure." in site.text
     assert playground.status_code == 200
     assert "AI Assurance Playground" in playground.text
