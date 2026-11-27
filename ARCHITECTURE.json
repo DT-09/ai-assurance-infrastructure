@@ -1,5 +1,5 @@
 {
-  "release": "6.0.0",
+  "release": "8.1.0",
   "name": "AI Assurance Infrastructure",
   "architecture": [
     "Persistent Assurance Core",
@@ -13,6 +13,6 @@
     "Python SDK",
     "Control Plane UI"
   ],
-  "design_goal": "Strategic vendor-neutral assurance infrastructure rather than a disposable qualification demo.",
-  "status": "verified engineering release"
+  "design_goal": "Vendor-neutral assurance and runtime-control infrastructure for AI systems.",
+  "status": "engineering release; production suitability requires environment-specific security, integration, and operational validation."
 }
