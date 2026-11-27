@@ -4,14 +4,25 @@
 
 This repository contains the persistent control-plane foundation, AI Assurance Protocol v1, and the public AI Assurance Benchmark v1.
 
-## Partner evaluation package
+## Initial commercial offer: AI Agent Authority Review
 
-The runtime-control engine includes a bounded, deterministic partner evaluation kit:
-- [Partner pilot offer](PARTNER_PILOT_OFFER.md) — scope, proposed fee, deliverables, and acceptance criteria
-- [Partner pilot runbook](PARTNER_PILOT_RUNBOOK.md) — safe execution and commercial decision gates
-- [Synthetic authority evaluation harness](examples/partner_authority_eval.py) — expected-versus-observed policy decisions with evidence hashes
+The first narrow buyer is an AI automation agency or B2B software team deploying tool-using customer-support, CRM or order-management agents.
 
-The harness uses the in-memory policy gateway and synthetic scenarios only. It does not call an LLM, connect to customer systems, or execute real-world side effects. It is an evaluation fixture, not a customer assessment or security certification. The proposed US$250 pilot price is unvalidated and should be used only as a commercial test after the buyer agrees to scope.
+The review compares a declared authority contract with sanitized execution traces. It can identify observed actions or tools outside an allow-list, missing approval evidence, data-class or destination violations, and transaction amounts above a declared limit.
+
+- [Authority Review offer](static/authority-review.html) — buyer, scope, deliverables and exclusions
+- [Commercial offer details](docs/COMMERCIAL_OFFER_AGENT_AUTHORITY_REVIEW.md) — exact paid-review scope and acceptance criteria
+- [Go-to-market plan](docs/GO_TO_MARKET_AGENT_AUTHORITY_REVIEW.md) — buyer qualification, channels, sales process and 30-day execution
+- [Local authority-review CLI](tools/authority_review.py) — deterministic assessment from sanitized JSON input
+- [Synthetic review input](examples/authority_review_input.json) — safe fixture for local demonstration
+
+Run locally from the repository root:
+
+```bash
+python tools/authority_review.py examples/authority_review_input.json -o authority-review-report.json
+```
+
+The CLI makes no network calls and uses a temporary local SQLite database. It evaluates only supplied contract, traces, policies and changes. It does not execute adversarial tests, penetration tests or production changes. Its output is not a certification, compliance attestation or guarantee. The US$179 price is a proposed test price, not a validated AAI customer transaction.
 
 ## Inbound developer surface
 
